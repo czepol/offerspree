@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:lift="http://liftweb.net/">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<title>HOME :: <lift:Menu.title /></title>
+		<!--script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script-->
+		<script src="/js/jquery-1.4.2.js"></script>
+		<script src="/js/jquery.ui.all.js"></script>
+		<script src="/js/modernizr-1.7.min.js"></script>
+		<script src="/js/jquery.jgrowl.js"></script>
+		<script src="/js/script.js"></script>
+		<link rel="stylesheet" href="/js/jquery.jgrowl.css" type="text/css"/>
+		<link rel="stylesheet" href="/css/reset.css" media="all" />
+		<link rel="stylesheet" href="/css/grid.css" media="all" />
+		<link rel="stylesheet" href="/css/general.css" media="all" />
+		<link rel="stylesheet" href="/css/css3.css" media="all" />
+		<link rel="stylesheet" href="/css/style.css" media="all" />
+	</head>
+	<body>
+		<div id="container" class="row">
+		  <header>
+			<hgroup>
+			  <h1><a href="/">wPromocji</a></h1>
+			</hgroup>
+		  </header>
+		  <lift:msgs />
+		  <div id="content">
+		  <lift:bind name="content" />
+		  </div>
+			<div id="sidebar">
+			  <h3>Sidebar</h3>
+				<nav>
+					<lift:Menu.builder />
+				</nav>
+			</div>
+			<div class="clear" />
+		</div>
+	</body>
+</html>

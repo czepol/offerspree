@@ -1,0 +1,12 @@
+<lift:surround with="default-admin" at="content">
+<div id="main_panel_container" class="left">
+	<div class="section" style="width:920px">
+		<form method="post" action="/admin/categories/create">
+			<fieldset>
+			<legend><span>Create category</span></legend>
+			<lift:Categories.adminCreate />
+			</fieldset>
+		</form>
+	</div>
+</div>
+</lift:surround>

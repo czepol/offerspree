@@ -1,0 +1,66 @@
+<lift:surround with="default-admin" at="content">
+<div id="main_panel_container" class="left">
+	<lift:Admins.dashboard>
+	<div id="dashboard">
+		<h2 class="ico_mug">Dashboard</h2>
+		<div class="clearfix">
+		<div class="left quickview" style="width:47%;">
+			<h3>Overview</h3>
+			<ul>
+			<li>Total Deals: <span class="number"><dash:total_deals /></span></li>
+			<li>Total Comments: <span class="number"><dash:total_comments /></span></li>
+			<li>Drafts: <span class="number"><dash:deals_draft /></span></li>
+			<li>Comments waiting for aproval: <span class="number"><dash:comments_waiting /></span></li>
+			</ul>
+		</div>
+		<div class="quickview right" style="width:47%;">
+			<h3>Some data</h3>
+			<ul>
+			<li>Users online: <span class="number"><dash:users_online /></span></li>
+			<li>&nbsp;</li>
+			<li>&nbsp;</li>
+			<li>&nbsp;</li>
+			</ul>
+		</div>
+
+		</div>
+	</div><!-- end #dashboard -->
+	</lift:Admins.dashboard>
+</div>
+<div id="sidebar" class="right">
+	<h2 class="ico_mug">Sidebar</h2>
+	<ul id="menu">
+		<li>
+			<a href="#" class="ico_posts">Deals</a>
+			<ul style="display: block; ">
+				<li><a href="/admin/deals/create">Add deal</a></li>
+				<li><a href="/admin/deals/list">Manage deals</a></li>
+			</ul>
+			<a href="#" class="ico_posts">Comments</a>
+			<ul style="display:none">
+				<li><a href="/admin/comments/list">Manage comments</a></li>
+			</ul>
+			<a href="#" class="ico_posts">Categories</a>
+			<ul style="display: none;">
+				<li><a href="/admin/categories/create">Add category</a></li>
+				<li><a href="/admin/categories/list">Manage categories</a></li>
+			</ul>
+			<a href="#" class="ico_posts">Votes</a>
+			<ul style="display:none">
+				<li><a href="/admin/votes/list">Manage votes</a></li>
+			</ul>
+			<a href="#" class="ico_page">Pages</a>
+			<ul style="display: none; ">
+				<li><a href="#">Edit pages</a></li>
+				<li><a href="#">Add page</a></li>
+				<li><a href="#">Manage pages</a></li>
+			</ul>
+			<a href="#" class="ico_user">Users</a>
+			<ul style="display: none; ">
+				<li><a href="/admin/users/create">Add user</a></li>
+				<li><a href="/admin/users/list">Manage users</a></li>
+			</ul>
+		</li>	
+	</ul>
+</div>
+</lift:surround>

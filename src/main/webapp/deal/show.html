@@ -1,0 +1,59 @@
+<lift:surround with="default" at="content">
+	<lift:Deals.show>
+	<lift:bind-at name="title">Offer Spree :: <deal:title /></lift:bind-at>
+    <div class="deal">
+	  <h4><deal:titleLink /></h4>
+      <div>
+		<style>
+			.deal .txt {width:485px;}
+			form.voting {float:left;width:40px;padding-right:10px;}
+			form.voting input[type=submit] {float:left;width:40px;font-size:12px;line-height:1em;}
+			form.voting input[type=text] {float:left;width:38px;padding:0;margin:0;text-align:center;}
+		</style>
+		<form method="post" class="voting">
+			<deal:dealid />
+			<deal:userid />
+			<deal:voteup />
+			<deal:value />
+			<deal:votedown />
+		</form>
+      </div>
+      <div class="txt">
+		<p><deal:text /></p>
+      </div>
+	  <div class="img">
+	    <deal:thumb><img src="/img/125x100.png" class="offer-img" alt="" /></deal:thumb>
+	  </div>
+	  <div class="clear" />
+    </div>
+	</lift:Deals.show>
+	
+	<lift:Deals.navigation>
+	<p>
+		<navigation:nav />
+	</p>
+	</lift:Deals.navigation>
+	
+	<lift:Comments.list>
+	<a name="comments"></a>
+	<h4 id="comments">Komentarze</h4>
+	
+	
+	<ul>
+		<li class="comment">
+			<a name="comment_id"></a>
+			<div class="authorbox">
+				<span class="avatar"></span>
+				<span class="author"></span>
+				<span class="date"></span>
+			</div>
+			<p class="text"></p>
+		</li>
+	</ul>
+	</lift:Comments.list>
+	
+	<lift:Comments.addComment form="POST">
+		<form:text />
+		<p><form:submit /></p>
+    </lift:Comments.addComment>
+</lift:surround>

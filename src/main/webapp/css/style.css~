@@ -1,0 +1,43 @@
+body {
+  background: #eee;
+}
+
+::selection {
+  background: #328efe;
+}
+
+#container {
+  background: #fff;
+  padding: 15px 10px;
+  margin-top: 20px;
+}
+
+.profile {
+  position: relative;
+}
+
+.profile > div {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 200px;
+}
+
+.profile ul {
+  list-style: none;
+}
+
+.profile ul li {
+  display: inline;
+}
+
+/*
+#notificationContainer {
+  position: relative;
+}*/
+/*
+#notificationArea {
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+}*/

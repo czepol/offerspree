@@ -1,0 +1,40 @@
+<lift:surround with="default" at="content">
+  <div class="offers">
+  <lift:Deals.listSpecial>
+    <div class="deal">
+      <h4><deal:title /></h4>
+      <div>
+		<style>
+			.deal .txt {width:485px;}
+			form.voting {float:left;width:40px;padding-right:10px;}
+			form.voting input[type=submit] {float:left;width:40px;font-size:12px;line-height:1em;}
+			form.voting input[type=text] {float:left;width:38px;padding:0;margin:0;text-align:center;}
+		</style>
+		<form method="post" class="voting">
+			<deal:dealid />
+			<deal:userid />
+			<deal:voteup />
+			<deal:value />
+			<deal:votedown />
+		</form>
+      </div>
+      <div class="txt">
+		<p><deal:text /></p>
+      </div>
+	  <div class="img">
+	    <deal:thumb><img src="/img/125x100.png" class="offer-img" alt="" /></deal:thumb>
+	  </div>
+	    <deal:actions />
+	  <div class="clear" />
+    </div>  
+    <hr />
+  </lift:Deals.listSpecial>
+  
+  <lift:Deals.paginate>
+  <div class="pagination">
+	<nav:prev /><nav:allpages/><nav:next/>
+  </div>
+  </lift:Deals.paginate>
+
+  </div>
+</lift:surround>

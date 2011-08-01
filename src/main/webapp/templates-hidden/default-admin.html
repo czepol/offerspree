@@ -1,0 +1,87 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:lift="http://liftweb.net/">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<title>Offer Spree :: <lift:Menu.title /></title>
+		<link rel="stylesheet" type="text/css" media="all" href="/admin/css/style.css" />
+		<link rel="Stylesheet" type="text/css" href="/admin/css/smoothness/jquery-ui-1.7.1.custom.css" />	
+		<!--[if IE 7]><link rel="stylesheet" href="/admin/css/ie.css" type="text/css" media="screen, projection" /><![endif]-->
+		<!--[if IE 6]><link rel="stylesheet" href="/admin/css/ie6.css" type="text/css" media="screen, projection" /><![endif]-->
+		<link rel="stylesheet" type="text/css" href="/admin/markitup/skins/markitup/style.css" />
+		<link rel="stylesheet" type="text/css" href="/admin/markitup/sets/default/style.css" />
+		<link rel="stylesheet" type="text/css" href="/admin/css/superfish.css" media="screen" />
+		<link rel="stylesheet" type="text/css" href="/js/facebox/facebox.css" media="screen" />
+		<!--[if IE]>
+			<style type="text/css">
+			  .clearfix {
+				zoom: 1;     /* triggers hasLayout */
+				display: block;     /* resets display for IE/Win */
+				}  /* Only IE can see inside the conditional comment
+				and read this CSS rule. Don't ever use a normal HTML
+				comment inside the CC or it will close prematurely. */
+			</style>
+			<script language="javascript" type="text/javascript" src="/admin/js/excanvas.pack.js"></script>
+		<![endif]-->
+		<!-- JavaScript -->
+		<script type="text/javascript" src="/admin/js/jquery-1.3.2.min.js"></script>
+		<script type="text/javascript" src="/admin/js/jquery-ui-1.7.1.custom.min.js"></script>
+		<script type="text/javascript" src="/admin/js/hoverIntent.js"></script>
+		<script type="text/javascript" src="/admin/js/superfish.js"></script>
+		<script type="text/javascript" src="/admin/js/excanvas.pack.js"></script>
+		<!--script type="text/javascript" src="/admin/js/jquery.flot.pack.js"></script-->
+		<script type="text/javascript" src="/admin/markitup/jquery.markitup.pack.js"></script>
+		<script type="text/javascript" src="/admin/markitup/sets/default/set.js"></script>
+		<script type="text/javascript" src="/admin/js/custom.js"></script>
+		<script type="text/javascript" src="/js/facebox/facebox.js"></script>
+		<script type="text/javascript">
+			jQuery(function(){
+				jQuery('ul.sf-menu').superfish();
+			});
+			jQuery(document).ready(function($) {
+			  $('a[rel*=facebox]').facebox({
+				loadingImage : '/js/facebox/loading.gif',
+				closeImage   : '/js/facebox/closelabel.png'
+			  })
+			})
+		</script>
+	</head>
+	<body>
+		<div class="container" id="container">
+			<div  id="header">
+				<lift:Admins.profileBox />
+				<div id="logo"><h1><a href="/admin/">Admin Panel</a></h1></div>
+			</div><!-- end header -->
+			<div id="content" >
+			<div id="top_menu">
+				<!--lift:menu.builder group="admin" linkToSelf="true" ul:class="sf-menu" li_item:class="current" expandAll="true" /-->
+				<ul class="sf-menu">
+					<li><a href="/admin/">Dashboard</a></li>
+					<li>
+						<a href="/admin/deals">Deals</a>
+						<ul>
+							<li><a href="/admin/deals/list">Deals list</a></li>
+							<li><a href="/admin/deals/create">Create deal</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="/admin/users">Users</a>
+						<ul>
+							<li><a href="/admin/users/list">Users list</a></li>
+							<li><a href="/admin/users/create">Create user</a></li>
+						</ul>
+					</li>
+				</ul>
+				<a href="/" id="visit" class="right">Visit site</a>
+			</div>
+				<div id="content_main" class="clearfix">
+					<lift:bind name="content" />
+				</div>
+			</div>
+			<div  id="footer" class="clearfix">
+				<p class="left">Offer Spree &bull; Powered by Liftweb 2.3 and Scala 2.9.0-1</p>
+				<p class="right">© 2011</p>
+			</div><!-- end #footer -->
+		</div>
+	</body>
+</html>

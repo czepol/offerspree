@@ -1,0 +1,42 @@
+<lift:surround with="default-deal-submit" at="content">
+  <lift:Deals.add form="POST" multipart="true">
+    <h2><lift:Loc.add-new-deal>Submit new offer</lift:Loc.add-new-deal></h2>
+    
+    <div>
+    
+    <label><lift:Loc.title>Title</lift:Loc.title><br/>
+    <deal:title /></label><br/>
+    
+    <lift:Loc.dealtype>Deal type</lift:Loc.dealtype>:<br/>
+    <deal:dealtype /><br/>
+    
+    <label><lift:Loc.url>URL</lift:Loc.url>:<br/>
+    <deal:url /></label><br/>  
+    
+    <lift:Loc.price>Price</lift:Loc.price>:<br/>
+    <deal:price /><br/>
+    
+    <lift:Loc.category>Category</lift:Loc.category>:<br/>
+    <deal:category /><br/>
+    
+    <lift:Loc.start>Start</lift:Loc.start>:<br/>
+    <deal:start /><br/>
+    
+    <lift:Loc.end>End</lift:Loc.end>:<br/>
+    <deal:end /><br/>
+    
+    <lift:Loc.description>Description</lift:Loc.description>:<br/>
+    <deal:text /><br/>
+
+    <deal:submit />
+    </div>
+  </lift:Deals.add>
+  
+  
+  <!--lift:Deals.submit></lift:Deals.submit-->
+  
+    <!--choose:get>
+    Select a file to upload: <ul:file_upload></ul:file_upload><br/>
+    <input type="submit" value="Upload File" />
+    </choose:get-->
+</lift:surround>
