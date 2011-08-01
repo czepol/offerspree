@@ -4,14 +4,12 @@ db.url=jdbc:postgresql:wpromocji
 db.user=wpromocji
 db.password=wpromocji
 
-// Facebook API key
-facebook.appId="220212884667185"
-facebook.key="09e6a6f114e0c4f0a918f4dbfc2e309d"
-facebook.secret="751bdf7ed9edf7b116ce71d5f9e5682c"
+omniauth.baseurl=http://dev.wpromocji.com:8080/
+omniauth.successurl=http://dev.wpromocji.com:8080/user/oauth
 
-omniauth.facebooksecret="751bdf7ed9edf7b116ce71d5f9e5682c"
-omniauth.facebookkey="09e6a6f114e0c4f0a918f4dbfc2e309d"
-omniauth.twittersecret=""
-omniauth.twitterkey=""
-omniauth.githubkey=""
-omniauth.githubsecret=""
+omniauth.facebooksecret=751bdf7ed9edf7b116ce71d5f9e5682c
+omniauth.facebookkey=09e6a6f114e0c4f0a918f4dbfc2e309d
+omniauth.twittersecret=
+omniauth.twitterkey=
+omniauth.githubkey=
+omniauth.githubsecret=
