@@ -43,7 +43,7 @@ class Users extends PaginatorSnippet[User] {
       <a href={pageUrl(newFirst)}>{ns}</a>
     }
   }
-  
+  /*
   def oauthSignIn(in: NodeSeq): NodeSeq = {
     var provider: Any = ""
     var userData: Option[Any] = Empty
@@ -88,7 +88,7 @@ class Users extends PaginatorSnippet[User] {
           actionsAfterSignup(theUser)  
           S.redirectTo("/")
           
-        case xs => S.error(xs); println("Sa bledy") /*; signupFunc(Full(innerSignup _))*/
+        case xs => S.error(xs); println("Sa bledy"); //signupFunc(Full(innerSignup _))
       }  
     }
     
@@ -114,6 +114,105 @@ class Users extends PaginatorSnippet[User] {
                 "password" -> SHtml.password(password, password=_),
                 "passconf" -> SHtml.password(passconf, passconf=_),
                 "submit" -> SHtml.submit(?("submit"), testSignup _))
+            }
+            case _ => in
+          }
+        }
+        case None => in
+      }
+    } else {
+      in
+    }
+  }*/
+  
+  def oauthSignIn(in: NodeSeq): NodeSeq = {
+    var provider: Any = ""
+    var userData: Option[Any] = Empty
+    var userName: Any = ""
+    var firstName: Any = ""
+    var lastName: Any = ""
+    var locale: Any = ""
+    var email: Any = ""
+    var profile: Any = ""
+    var submit: Any = ""
+    var password = ""
+    var passconf = ""
+    Omniauth.currentAuthMap match {
+      case Full(omni) => {
+        provider = omni.get(Omniauth.Provider)
+        userData = omni.get(Omniauth.UserInfo)
+      }
+      case Empty => S.redirectTo("/")
+      case Failure(_,_,_) => S.error("Error"); S.redirectTo("/")
+    }
+    provider match {
+      case Some(prov) => provider = prov 
+    }
+    
+    def signUp() = {
+      if(S.post_?) {
+        val user = User.create
+        
+        user.firstName(firstName.toString)
+            .lastName(lastName.toString)
+            .email(email.toString)
+            .locale(locale.toString)
+            .facebookProfile(profile.toString)
+        
+        (password,passconf) match {
+          case (pw,pc) if pw == pc && pw.length>5 => user.password(password.toString)
+          case (pw,pc) if pw != pc => S.error(?("password-not-match"))
+          case (pw,pc) if pw.length<=5 => S.error(?("password-length-error")) 
+        }
+        
+        userName match {
+          case userName: String => user.userName(userName)
+          case _ => S.error("Error")
+        }
+        
+        if(!User.uniqueEmail_?(email.toString)) {
+          S.error(?("unique-email-error"))
+        }
+        
+        if(!User.uniqueUserName_?(userName.toString)) {
+          S.error(?("unique-username-error"))
+        }
+        
+        user.validate match {
+          case Nil => {
+            println("walidacja")
+            user.validated(true).uniqueId.reset()
+            user.save
+            User.logUserIn(user)
+            S.redirectTo("/")
+          }
+          case xs => S.error(xs)
+        }
+      }
+    }
+    
+    if(provider == "facebook") {
+      userData match {
+        case Some(userData) => {
+          userData match {
+            case data: Map[String,Any] => {
+              userName  = data.getOrElse("Nickname", "")
+              firstName = data.getOrElse("FirstName", "")
+              lastName  = data.getOrElse("LastName", "")
+              locale    = data.getOrElse("Locale", "")
+              email     = data.getOrElse("Email", "")
+              profile   = data.getOrElse("Profile", "")
+              
+              bind("user", in, 
+                "username" -> SHtml.text(userName.toString, parm => userName=parm, ("size","35")),
+                "firstname" -> SHtml.text(firstName.toString, parm => firstName=parm, ("size","35")),
+                "lastname" -> SHtml.text(lastName.toString, parm => lastName=parm, ("size", "35")),
+                "locale" -> SHtml.text(locale.toString, parm => locale=parm, ("type", "hidden")),
+                "profile" -> SHtml.text(profile.toString, parm => profile=parm, ("type", "hidden")),
+                "email" -> SHtml.text(email.toString, parm => email=parm, ("size","35")),
+                "password" -> SHtml.password(password, password=_),
+                "passconf" -> SHtml.password(passconf, passconf=_),
+                "submit" -> SHtml.submit(?("submit"), signUp _))
             }
             case _ => in
           }

@@ -196,26 +196,38 @@ BookAuthors, BookAuthors.author, BookAuthors.book, Book)
     CompanyAdmins, CompanyAdmins.admin, CompanyAdmins.company, CompanyProfile)
 
   
-  override def niceName: String = (firstName.is, lastName.is, email.is) match {
+  override def niceName: String = 
+    (firstName.is, lastName.is, email.is) match {
       case (f, l, _) if f.length > 1 && l.length > 1 => f+" "+l  
       case (f, _, _) if f.length > 1 => f  
       case (_, l, _) if l.length > 1 => l  
       case (_, _, e) => e  
-  }
+    }
   
-  def getUsernameById(userId: Long): String = {
+  def getUsernameById(userId: Long): String = 
     User.find(By(User.id, userId)) match {
       case Full(user) => user.userName.toString
       case _ => "Konto usunięte"
     }
-  }
+ 
   
-  def withIdExist_?(userId: Long): Boolean = {
+  def withIdExist_?(userId: Long): Boolean = 
     User.find(By(User.id, userId)) match {
       case Full(user) => true
       case _ => false
     }
-  }
-    
+
+  
+  def uniqueEmail_?(email: String): Boolean = 
+    User.find(By(User.email, email)) match {
+      case Full(user) => false
+      case _ => true
+    }
+  
+  def uniqueUserName_?(userName: String): Boolean =
+    User.find(By(User.userName, userName)) match {
+      case Full(user) => false
+      case _ => true
+    }
 }
 
