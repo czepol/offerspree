@@ -92,7 +92,7 @@ class Comments extends PaginatorSnippet[Comment] {
 				  "submit" -> SHtml.ajaxSubmit("Submit", () => onSubmit )
 			  )
       }
-      case _ => <p><a href="/user/login">Zaloguj się</a> aby komentować</p>
+      case _ => <p><a href={User.loginAndRedirectURL}>Zaloguj się</a> aby komentować</p>
     }
   }
   

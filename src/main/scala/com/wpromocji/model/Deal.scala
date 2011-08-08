@@ -1,11 +1,14 @@
 package com.wpromocji.model
 
-import scala.xml.{NodeSeq, Elem}
+import scala.xml.{NodeSeq, Node, Elem}
 import net.liftweb.common._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import net.liftweb.mapper._
 import net.liftweb.http._
+import net.liftweb.json._
+import net.liftweb.json.JsonDSL._
+import java.util.Date
 
 /**
  * Deal model
@@ -107,6 +110,32 @@ class Deal extends LongKeyedMapper[Deal]
       }
       case _ => ""
     }
+    
+  def toJson(id: Long, ver: String): JValue = {
+    if(ver == "1.0") {
+      Deal.find(By(Deal.id, id)) match {
+        case Full(deal) => {
+            ("deal" -> 
+             ("title" -> deal.title.toString) ~
+             ("url" -> deal.url.toString) ~
+             ("date" -> deal.date.toString))
+        }
+        case _ => ("deal" -> 
+                   ("errors" -> 
+                    ("error" -> "Not found")
+                   )
+                  )
+      }
+    } else {
+      ("deal" ->
+       ("errors" ->
+        ("error" -> "Bad API version")
+       )
+      )
+    }
+  }
+  
+  def toXml(id: Long, ver: String): Node = Xml.toXml(Deal.toJson(id,ver)).head
   
   def toLink(title: String, id: Long) = 
     <a href={"/deal/"+id+"/"+Deal.toPermalink(title)+".html"}>{title}</a>
@@ -120,9 +149,10 @@ class Deal extends LongKeyedMapper[Deal]
     val currDeal = Deal.find(By(Deal.id, curr))
     currDeal match {
       case Full(deal) => {
-        Deal.find(By_<(Deal.date, deal.date)) match {
-          case Full(next) => { println("Znalazlem: " + next.id);next.id}
-          case _ => {println("Nie znalazlem");0L}
+        var date: Date = deal.date
+        Deal.find(By_<(Deal.date, date), By(Deal.published, true)) match {
+          case Full(next) => next.id
+          case _ => 0L
         }
       }
       case _ => 0L
@@ -133,9 +163,10 @@ class Deal extends LongKeyedMapper[Deal]
     val currDeal = Deal.find(By(Deal.id, curr))
     currDeal match {
       case Full(deal) => {
-        Deal.find(By_>(Deal.date, deal.date)) match {
-          case Full(prev) => {println("Znalazlem: " + prev.id); prev.id}
-          case _ => {println("Nie znalazlem");0L}
+        var date: Date = deal.date
+        Deal.find(By_>(Deal.date, date), By(Deal.published, true)) match {
+          case Full(prev) => prev.id
+          case _ => 0L
         }
       }
       case _ => 0L

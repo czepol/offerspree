@@ -28,15 +28,17 @@
     <lift:Loc.description>Description</lift:Loc.description>:<br/>
     <deal:text /><br/>
 
+    <lift:Loc.imageUpload>Image upload</lift:Loc.imageUpload>:<br/>
+    <deal:imageUpload /><br/>
+
     <deal:submit />
     </div>
   </lift:Deals.add>
   
+  <hr/>
   
-  <!--lift:Deals.submit></lift:Deals.submit-->
   
-    <!--choose:get>
-    Select a file to upload: <ul:file_upload></ul:file_upload><br/>
-    <input type="submit" value="Upload File" />
-    </choose:get-->
+  <h1>Nowy formularz (jeszcze nie działa)</h1>
+  <lift:DealSubmit form="POST" multipart="true"></lift:DealSubmit>
+
 </lift:surround>

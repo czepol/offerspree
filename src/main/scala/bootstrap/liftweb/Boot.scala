@@ -5,9 +5,11 @@ import net.liftweb.common._
 import net.liftweb.mapper._
 import net.liftweb.util._
 import net.liftweb.http._
+import net.liftweb.http.S._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import com.wpromocji.model._
+import com.wpromocji.api._
 import net.liftweb.http.provider.{HTTPRequest,HTTPCookie}
 import omniauth._
 import omniauth.lib._
@@ -36,15 +38,23 @@ class Boot {
     // create database tables from models 
     Schemifier.schemify(true, Schemifier.infoF _, 
       User, Deal, Badge, UserBadge, Tag, DealTag, 
-      Category, Vote, Comment, CompanyProfile, CompanyAdmins)
+      Category, Vote, Comment, CompanyProfile, CompanyAdmins,
+      Merchant)
     
     
     // where to search snippet
     LiftRules.addToPackages("com.wpromocji")
 
-    val loggedIn = If(() => User.loggedIn_?,
-              () => RedirectResponse("/user/login"))
-              
+    def loginAndComeBack = {
+      val uri = S.uri 
+      RedirectWithState("/user/login", RedirectState(() => User.loginReferer(uri))) 
+    }
+
+    /*val loggedIn = If(() => User.loggedIn_?,
+              () => loginAndComeBack _ )*/
+    
+    val loggedIn = If(User.loggedIn_? _, loginAndComeBack _)
+            
     val superUserLoggedIn = If(() => User.superUser_?, 
               () => RedirectResponse("/admin/login"))
               
@@ -118,6 +128,8 @@ class Boot {
           Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
           
     LiftRules.localeCalculator = localeCalculator _
+    
+    LiftRules.dispatch.append(DealAPI)
     
     LiftRules.statelessRewrite.append {
       // Example: #/dashboard

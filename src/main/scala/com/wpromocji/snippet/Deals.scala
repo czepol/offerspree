@@ -2,7 +2,7 @@ package com.wpromocji {
 package snippet {
 import scala.xml.{NodeSeq,Text}
 import net.liftweb.util.Helpers._
-import net.liftweb.common.{Full,Empty}
+import net.liftweb.common.{Full,Empty,Box}
 import net.liftweb.http._
 import net.liftweb.mapper._
 import com.wpromocji.model.{User,Deal,Comment,Vote,Category}
@@ -10,6 +10,8 @@ import com.wpromocji.util._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import net.liftweb.util.Helpers._
+import net.liftweb.util._
+import net.liftweb.wizard._
 import util._
 import S.?
 
@@ -67,10 +69,8 @@ class Deals extends PaginatorSnippet[Deal] {
   override def nextXml: NodeSeq = Text(?("next") + " »")
 
   override def pageXml(newFirst: Long, ns: NodeSeq): NodeSeq = {
-    if(first==newFirst || newFirst < 0 || newFirst >= count)
-    {
-      if(ns != Text("« " + ?("previous")) && ns != Text(?("next") + " »"))
-      {
+    if(first==newFirst || newFirst < 0 || newFirst >= count) {
+      if(ns != Text("« " + ?("previous")) && ns != Text(?("next") + " »")) {
         <span>{ns}</span>
       } else {
         <xml:group />
@@ -80,9 +80,12 @@ class Deals extends PaginatorSnippet[Deal] {
     }
   }
   
-  def submit(in: NodeSeq): NodeSeq = {
-    Deal.create.toForm(Full(?("submit")), { _.save })
-  }
+  /*def submit(in: NodeSeq): NodeSeq =
+    Deal.create.toForm(Full(?("submit")), { _.save })*/
+    
+
+
+  private object fileUpload extends RequestVar[Box[FileParamHolder]](Empty)
 
   def add(in: NodeSeq): NodeSeq = {
    
@@ -120,6 +123,7 @@ class Deals extends PaginatorSnippet[Deal] {
 				"category" -> SHtml.select(categories, Empty, cat => selectedCatId = cat.toString),
 				"start" -> SHtml.text("", parm => start=parm, ("class", "datepicker")),
 				"end" -> SHtml.text("", parm => end=parm, ("class", "datepicker")),
+				"imageUpload" -> SHtml.fileUpload(img => fileUpload(Full(img))),
 				"submit" -> SHtml.submit(?("submit"), submit)
 			)
   }
@@ -159,20 +163,18 @@ class Deals extends PaginatorSnippet[Deal] {
     var value  = Vote.getVotes(dealId).toString
     
     def submitUp() = {
-      if(S.post_?)
-      {
-          if(userid.length !=0 && userid.toLong > 0L) {
-            Vote.voteUp(dealid.toLong,userid.toLong)
-          }
+      if(S.post_?) {
+        if(userid.length !=0 && userid.toLong > 0L) {
+          Vote.voteUp(dealid.toLong,userid.toLong)
+        }
       }
     }
     
     def submitDown() = {
-      if(S.post_?)
-      {
-          if(userid.length !=0 && userid.toLong > 0L) {
-            Vote.voteDown(dealid.toLong,userid.toLong)
-          }
+      if(S.post_?) {
+        if(userid.length !=0 && userid.toLong > 0L) {
+          Vote.voteDown(dealid.toLong,userid.toLong)
+        }
       }
     }
     
@@ -213,29 +215,26 @@ class Deals extends PaginatorSnippet[Deal] {
     var value  = ""
 
     def submitUp() = {
-      if(S.post_?)
-      {
-          if(userid.length !=0 && userid.toLong > 0L) {
-            Vote.voteUp(dealid.toLong,userid.toLong)
-          }
+      if(S.post_?) {
+        if(userid.length !=0 && userid.toLong > 0L) {
+          Vote.voteUp(dealid.toLong,userid.toLong)
+        }
       }
     }
     
     def submitDown() = {
-      if(S.post_?)
-      {
-          if(userid.length !=0 && userid.toLong > 0L) {
-            Vote.voteDown(dealid.toLong,userid.toLong)
-          }
+      if(S.post_?) {
+        if(userid.length !=0 && userid.toLong > 0L) {
+          Vote.voteDown(dealid.toLong,userid.toLong)
+        }
       }
     }
-    if(deals.count(c=>true) == 0)
-    {
-      <p>Brak ofert spełniających kryteria.</p>
+    
+    if(deals.count(c=>true) == 0) {
+      <p>{?("Brak ofert spełniających kryteria.")}</p>
     } else {
       deals.flatMap(
         deal => {
-
           dealid = deal.id.toString
           User.currentUser match {
             case Full(user) => userid = user.id.toString
@@ -284,8 +283,8 @@ class Deals extends PaginatorSnippet[Deal] {
       prev = Deal.prevDeal(dealId)
       bind("navigation", in, "nav" -> {
       <ul class="nav-deals">
-      {if(next!=0L) Deal.toLink(Deal.getTitleById(next), next)}
-      {if(prev!=0L) Deal.toLink(Deal.getTitleById(prev), prev)}
+      {if(next!=0L) Deal.toLink(Deal.getTitleById(next)+" →", next)}
+      {if(prev!=0L) Deal.toLink("← "+Deal.getTitleById(prev), prev)}
       </ul>
       })
     } else {
@@ -331,6 +330,111 @@ class Deals extends PaginatorSnippet[Deal] {
     Text("")
   }
 
+}
+object imageFile extends RequestVar[Box[FileParamHolder]](Empty)
+object DealSubmit extends Wizard {
+  val stepOne = new Screen {
+    val title = 
+      field(?("title"), "", 
+        valMinLen(3, S ? "Title too short"),
+        valMaxLen(120, S ? "Title too long"))
+        
+    val price = 
+      field(?("price"), "")
+    
+    val dealType = 
+      radio(?("dealtype"), "", Map(?("merchant")->0,?("online")->1).keys.toList)
+      
+    val startDate =
+      field(?("start"), "", FormParam("class"->"datepicker"))
+      
+    val endDate = 
+      field(?("end"), "", FormParam("class"->"datepicker"))
+          
+    var selectedCat = 0L
+      
+    val category = new Field {
+      type ValueType = Long
+      def default = 0L
+      def name = ?("category")
+      lazy val manifest = buildIt[Long]
+      val cats = 
+        List(("0","-")) ::: Category.findAll.map(cat =>(cat.id.toString, ?(cat.l10n.toString))).toList
+      override def toForm = SHtml.select(cats, Empty, cat => selectedCat = cat.toLong)
+    }
+      
+    val description = 
+      textarea(?("description"), "")
+      
+    val imageUpload = new Field {     
+      type ValueType = Box[FileParamHolder]
+      def default = Empty
+      def name = ?("dealimage")
+      lazy val manifest = buildIt[Box[FileParamHolder]]
+      override def toForm = SHtml.fileUpload(img => imageFile(Full(img)))
+    }
+    override def hasUploadField = true   
+    
+  }
+  /*val stepTwoOnline = new Screen {
+  
+  }
+  val stepTwoMerchant = new Screen {
+  
+  }*/
+  def finish() {
+    import java.io.{File,FileOutputStream}
+    def imageSave(img: FileParamHolder): Unit = {
+      val imagePath = Props.get("upload.imagepath") openOr "/src/main/webapp/images"
+        img.file match {
+        case null => println("It is null")
+        case x if x.length == 0 => println("File size is 0")
+        case x =>{
+          println("We got a file!")
+
+          /**
+           * Set some fields on the Image table
+           
+          fileName.is.map{
+            name => img.is.img_path.set(filePath + "/" + name + fp.fileName.takeRight(4))
+          }
+
+          img.is.mime_type.set(fp.mimeType)
+          img.is.sort_order.set(0)
+           */
+          /**
+           * This tell helps save the product_id
+           * on the image table, so you can keep the
+           * relationship
+           */
+
+          /*product.is.images += img
+          product.is.save*/
+
+
+          val oFile = new File(imagePath, img.fileName)
+              val output = new FileOutputStream(oFile)
+              output.write(img.file)
+              output.close()
+          println("File uploaded!")
+          S.notice("Thanks for the upload")
+        }
+      }
+    }
+    
+    println(imageFile.is)
+    
+    imageFile.is match {
+      case image => {
+        imageFile.is.map{ file => imageSave(file) }
+        println("The RequestVar content is: %s".format(imageFile.is))
+      }
+      
+    }
+    S.notice("Title: "+stepOne.title)
+    S.notice("Price: "+stepOne.price)
+    S.notice("Type:  "+stepOne.dealType)
+  }
 }
 
 }

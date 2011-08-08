@@ -77,13 +77,13 @@ object User extends User with MetaMegaProtoUser[User] {
     (<form method="post" action={S.uri}><table><tr><td  
               colspan="2">{S.??("log.in")}</td></tr>  
           <tr><td>{S.?("username")}</td><td><user:username /></td></tr>  
-          <tr><td>{S.??("password")}</td><td><user:password /></td></tr>  
+          <tr><td>{S.??("password")}</td><td><user:password /><user:next /></td></tr>  
           <tr><td><a href={lostPasswordPath.mkString("/", "/", "")}  
                 >{S.??("recover.password")}</a></td><td><user:submit /></td></tr></table>
      </form>)  
   }  
   
-  override def login = {  
+  override def login = { 
     if (S.post_?) {  
       S.param("username").  
       flatMap(username => getSingleton.find(By(userName, username))) match {  
@@ -92,13 +92,16 @@ object User extends User with MetaMegaProtoUser[User] {
           S.notice(S.??("logged.in"))  
           logUserIn(user)
           currentUser.open_!.lastLogin(new java.util.Date).save
-          //S.redirectTo(homePage)  
-          val redir = loginRedirect.is match {  
-            case Full(url) =>  
-              loginRedirect(Empty)  
+          val redir = loginReferer.is match {  
+            case url: String if url != "/" =>
+              loginReferer("/")  
               url  
-            case _ =>  
-              homePage  
+            case _ => {
+              S.param("next").map(_.toString) match {
+                case Full(next) => next
+                case _ => homePage
+              }
+            }  
           }  
           S.redirectTo(redir)  
         
@@ -110,9 +113,14 @@ object User extends User with MetaMegaProtoUser[User] {
         case _ => S.error(S.??("invalid.credentials"))  
       }  
     }
+    val next = S.param("next").map(_.toString) match {
+      case Full(next) => next
+      case _ => homePage
+    }
     bind("user", loginXhtml,  
          "username" -> (FocusOnLoad(<input type="text" name="username"/>)),  
-         "password" -> (<input type="password" name="password"/>),  
+         "password" -> (<input type="password" name="password"/>),
+         "next" -> (<input type="hidden" name="next" value={next}/>),
          "submit" -> (<input type="submit" value={S.??("log.in")}/>))  
   }
   
@@ -195,6 +203,9 @@ BookAuthors, BookAuthors.author, BookAuthors.book, Book)
   object profiles extends MappedManyToMany(
     CompanyAdmins, CompanyAdmins.admin, CompanyAdmins.company, CompanyProfile)
 
+  object loginReferer extends SessionVar("/") 
+  
+  def loginAndRedirectURL = "/user/login?next=" + S.uri
   
   override def niceName: String = 
     (firstName.is, lastName.is, email.is) match {

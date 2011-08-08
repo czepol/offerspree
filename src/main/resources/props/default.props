@@ -4,6 +4,10 @@ db.url=jdbc:postgresql:wpromocji
 db.user=wpromocji
 db.password=wpromocji
 
+// Image path
+
+upload.imagepath=/home/czepol/Pulpit/offerspree/upload_tmp
+
 omniauth.baseurl=http://dev.wpromocji.com:8080/
 omniauth.successurl=http://dev.wpromocji.com:8080/user/oauth
 
