@@ -149,17 +149,17 @@ class Boot {
     
       // Example: #/deal/1523/      
       case RewriteRequest(
-        ParsePath(List("deal", dealid, "index"), "", true, true), GetRequest, _) =>
+        ParsePath(List("deal", dealid, "index"), "", true, true), _, _) =>
            RewriteResponse(List("deal", "show"), Map("dealid" -> urlDecode(dealid)))
       
       // Example: #/deal/1523/edit     
       case RewriteRequest(
-        ParsePath(List("deal", dealid, "edit"), "", true, false), GetRequest, _) =>
+        ParsePath(List("deal", dealid, "edit"), "", true, false), _, _) =>
            RewriteResponse(List("deal", "edit"), Map("dealid" -> urlDecode(dealid)))
       
       // Example: #/deal/1523/lorem-ipsum-dolor-sit-amet.html     
       case RewriteRequest(
-        ParsePath(List("deal", dealid, slug), "html", true, false), GetRequest, _) => 
+        ParsePath(List("deal", dealid, slug), "html", true, false), _, _) => 
             RewriteResponse(List("deal", "show"), Map("dealid" -> urlDecode(dealid), "slug" -> urlDecode(slug)))
       
       // Example #/admin/users/edit/124     
