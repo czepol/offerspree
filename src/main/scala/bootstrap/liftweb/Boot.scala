@@ -1,6 +1,7 @@
 package bootstrap.liftweb
 
 import java.util.Locale
+import java.io.{File,ByteArrayInputStream}
 import net.liftweb.common._
 import net.liftweb.mapper._
 import net.liftweb.util._
@@ -10,6 +11,7 @@ import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
 import com.wpromocji.model._
 import com.wpromocji.api._
+import com.wpromocji.Helpers._
 import net.liftweb.http.provider.{HTTPRequest,HTTPCookie}
 import omniauth._
 import omniauth.lib._
@@ -30,9 +32,7 @@ class Boot {
 			         Props.get("db.user"), Props.get("db.password"))
 
       LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
-
       DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
-    
     }
   
     // create database tables from models 
@@ -40,18 +40,9 @@ class Boot {
       User, Deal, Badge, UserBadge, Tag, DealTag, 
       Category, Vote, Comment, CompanyProfile, CompanyAdmins,
       Merchant)
-    
-    
+     
     // where to search snippet
     LiftRules.addToPackages("com.wpromocji")
-
-    def loginAndComeBack = {
-      val uri = S.uri 
-      RedirectWithState("/user/login", RedirectState(() => User.loginReferer(uri))) 
-    }
-
-    /*val loggedIn = If(() => User.loggedIn_?,
-              () => loginAndComeBack _ )*/
     
     val loggedIn = If(User.loggedIn_? _, loginAndComeBack _)
             
@@ -121,15 +112,48 @@ class Boot {
     
     Omniauth.init
 
-    LiftRules.ajaxStart =
-          Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
+    LiftRules.ajaxStart = Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
           
-    LiftRules.ajaxEnd =
-          Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
+    LiftRules.ajaxEnd   = Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
           
     LiftRules.localeCalculator = localeCalculator _
     
     LiftRules.dispatch.append(DealAPI)
+
+    val imagePath = Props.get("upload.imagepath") openOr "/src/main/webapp/images"
+    
+    LiftRules.statelessDispatchTable.append {
+      case Req("image" :: name :: Nil, "jpg", _) => 
+        () =>    
+          val file   = new File(imagePath+"/"+name+".jpg")
+          val stream = new ByteArrayInputStream(getBytesFromFile(file))
+          Full(StreamingResponse(stream,
+                            () => stream.close,
+                            stream.available,
+                            List("Content-Type" -> "image/jpg"),
+                            Nil,
+                            200))
+      case Req("image" :: name :: Nil, "png", _) => 
+        () =>    
+          val file   = new File(imagePath+"/"+name+".png")
+          val stream = new ByteArrayInputStream(getBytesFromFile(file))
+          Full(StreamingResponse(stream,
+                            () => stream.close,
+                            stream.available,
+                            List("Content-Type" -> "image/png"),
+                            Nil,
+                            200))
+      case Req("image" :: name :: Nil, "gif", _) => 
+        () =>    
+          val file   = new File(imagePath+"/"+name+".gif")
+          val stream = new ByteArrayInputStream(getBytesFromFile(file))
+          Full(StreamingResponse(stream,
+                            () => stream.close,
+                            stream.available,
+                            List("Content-Type" -> "image/gif"),
+                            Nil,
+                            200))
+    }
     
     LiftRules.statelessRewrite.append {
       // Example: #/dashboard
@@ -227,17 +251,6 @@ class Boot {
 	  
 	  LiftRules.htmlProperties.default.set((r: Req) =>
       new XHtmlInHtml5OutProperties(r.userAgent))
-    /*LiftRules.docType.default.set((r: Req) => r match {
-	    case _ if S.skipDocType => Empty
-	    case _ if S.getDocType._1 => S.getDocType._2
-	    case _ => Full(DocType.html5)
-	  })*/
-  	
-	  // Custom 404 page
-    /*LiftRules.uriNotFound.prepend(NamedPF("404handler"){
-      case (req,failure) => 
-        NotFoundAsTemplate(ParsePath(List("404"),"html",false,false))
-    })*/
     
     LiftRules.noticesAutoFadeOut.default.set( (notices: NoticeType.Value) => {
         notices match {
@@ -269,5 +282,9 @@ class Boot {
         case _ => calcLocale
       }
     }).openOr(Locale.getDefault())
-
+    
+  def loginAndComeBack = {
+    val uri = S.uri 
+    RedirectWithState("/user/login", RedirectState(() => User.loginReferer(uri))) 
+  }
 }

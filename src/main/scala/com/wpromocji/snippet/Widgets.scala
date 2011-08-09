@@ -16,7 +16,7 @@ class Widgets {
   private val maxTitleLenght = 25
   private val moreTitleText = " ..."
   
-  def hotByAll(in: NodeSeq): NodeSeq = {       
+  /*def hotByAll(in: NodeSeq): NodeSeq = {       
     val deals = Deal.findAll(
                   OrderBy(Deal.value, Descending),
                   MaxRows(count)
@@ -27,7 +27,7 @@ class Widgets {
         "value" -> deal.value.toString
       )
     })
-  }
+  }*/
 
 }
 

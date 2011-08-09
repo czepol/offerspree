@@ -140,8 +140,8 @@ class Deal extends LongKeyedMapper[Deal]
   def toLink(title: String, id: Long) = 
     <a href={"/deal/"+id+"/"+Deal.toPermalink(title)+".html"}>{title}</a>
   
-  def imageLink(url: String) = url match {
-    case url: String => url
+  def imageLink(name: String) = name match {
+    case name: String => S.uri+"image/"+name
     case _ => "/img/125x100.png"
   }
   
@@ -171,6 +171,5 @@ class Deal extends LongKeyedMapper[Deal]
       }
       case _ => 0L
     }
-  }
-  
+  }  
 }

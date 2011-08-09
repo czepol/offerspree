@@ -15,41 +15,97 @@ import net.liftweb.wizard._
 import util._
 import S.?
 
-
-class Deals extends PaginatorSnippet[Deal] {
-  
+class DealsHot extends PaginatorSnippet[Deal] {
   override def itemsPerPage = 5
-    
-  override def count = Deal.count 
-
+  override def count = Deal.count
+  
   override def page = Deal.findAll(
     StartAt(curPage*itemsPerPage), 
     MaxRows(itemsPerPage),
     OrderBy(Deal.date, Descending)
   )
   
-  def pageHotDeals = Deal.findAll(
-    StartAt(curPage*itemsPerPage),
+  override def prevXml: NodeSeq = Text("« " + ?("previous"))
+  override def nextXml: NodeSeq = Text(?("next") + " »")
+
+  override def pageXml(newFirst: Long, ns: NodeSeq): NodeSeq = {
+    if(first==newFirst || newFirst < 0 || newFirst >= count) {
+      if(ns != Text("« " + ?("previous")) && ns != Text(?("next") + " »")) {
+        <span>{ns}</span>
+      } else {
+        NodeSeq.Empty
+      }
+    } else {
+      <a href={pageUrl(newFirst)}>{ns}</a>
+    }
+  }
+  
+  def list(in: NodeSeq) = Deals.list(in, page)
+}
+
+class DealsSpecial extends PaginatorSnippet[Deal] {
+  override def itemsPerPage = 5
+  override def count = Deal.count
+  
+  override def page = Deal.findAll(
+    StartAt(curPage*itemsPerPage), 
     MaxRows(itemsPerPage),
-    By(Deal.published, true),
     OrderBy(Deal.date, Descending)
   )
   
-  def pageSpecialDeals = Deal.findAll(
-    StartAt(curPage*itemsPerPage),
-    MaxRows(itemsPerPage),
-    By(Deal.published, true),
-    OrderBy(Deal.date, Descending)
-  )
+  override def prevXml: NodeSeq = Text("« " + ?("previous"))
+  override def nextXml: NodeSeq = Text(?("next") + " »")
+
+  override def pageXml(newFirst: Long, ns: NodeSeq): NodeSeq = {
+    if(first==newFirst || newFirst < 0 || newFirst >= count) {
+      if(ns != Text("« " + ?("previous")) && ns != Text(?("next") + " »")) {
+        <span>{ns}</span>
+      } else {
+        NodeSeq.Empty
+      }
+    } else {
+      <a href={pageUrl(newFirst)}>{ns}</a>
+    }
+  }
   
-  def pageUpcomingDeals = Deal.findAll(
+  def list(in: NodeSeq) = Deals.list(in, page)
+}
+
+class DealsUpcoming extends PaginatorSnippet[Deal] {
+  override def itemsPerPage = 5
+  override def count = Deal.count(By(Deal.published, false))
+  
+  override def page = Deal.findAll(
     StartAt(curPage*itemsPerPage),
     MaxRows(itemsPerPage),
     By(Deal.published, false),
     OrderBy(Deal.date, Descending)
   )
   
-  def pageMerchantDeals = Deal.findAll(
+  override def prevXml: NodeSeq = Text("« " + ?("previous"))
+  override def nextXml: NodeSeq = Text(?("next") + " »")
+
+  override def pageXml(newFirst: Long, ns: NodeSeq): NodeSeq = {
+    if(first==newFirst || newFirst < 0 || newFirst >= count) {
+      if(ns != Text("« " + ?("previous")) && ns != Text(?("next") + " »")) {
+        <span>{ns}</span>
+      } else {
+        NodeSeq.Empty
+      }
+    } else {
+      <a href={pageUrl(newFirst)}>{ns}</a>
+    }
+  }
+  
+  def list(in: NodeSeq) = Deals.list(in, page)
+}
+
+class DealsMerchant extends PaginatorSnippet[Deal] {
+  override def itemsPerPage = 5
+  override def count = 
+    Deal.count(By(Deal.published, true),By(Deal.merchant, true))
+  
+  override def page = Deal.findAll(
     StartAt(curPage*itemsPerPage),
     MaxRows(itemsPerPage),
     By(Deal.merchant, true),
@@ -57,7 +113,30 @@ class Deals extends PaginatorSnippet[Deal] {
     OrderBy(Deal.date, Descending)
   )
   
-  def pageOnlineDeals = Deal.findAll(
+  override def prevXml: NodeSeq = Text("« " + ?("previous"))
+  override def nextXml: NodeSeq = Text(?("next") + " »")
+
+  override def pageXml(newFirst: Long, ns: NodeSeq): NodeSeq = {
+    if(first==newFirst || newFirst < 0 || newFirst >= count) {
+      if(ns != Text("« " + ?("previous")) && ns != Text(?("next") + " »")) {
+        <span>{ns}</span>
+      } else {
+        NodeSeq.Empty
+      }
+    } else {
+      <a href={pageUrl(newFirst)}>{ns}</a>
+    }
+  }
+  
+  def list(in: NodeSeq) = Deals.list(in, page)
+}
+
+class DealsOnline extends PaginatorSnippet[Deal] {
+  override def itemsPerPage = 5
+  override def count = 
+    Deal.count(By(Deal.online, true),By(Deal.published, true))
+  
+  override def page = Deal.findAll(
     StartAt(curPage*itemsPerPage),
     MaxRows(itemsPerPage),
     By(Deal.online, true),
@@ -73,60 +152,17 @@ class Deals extends PaginatorSnippet[Deal] {
       if(ns != Text("« " + ?("previous")) && ns != Text(?("next") + " »")) {
         <span>{ns}</span>
       } else {
-        <xml:group />
+        NodeSeq.Empty
       }
     } else {
       <a href={pageUrl(newFirst)}>{ns}</a>
     }
   }
   
-  /*def submit(in: NodeSeq): NodeSeq =
-    Deal.create.toForm(Full(?("submit")), { _.save })*/
-    
+  def list(in: NodeSeq) = Deals.list(in, page)
+}
 
-
-  private object fileUpload extends RequestVar[Box[FileParamHolder]](Empty)
-
-  def add(in: NodeSeq): NodeSeq = {
-   
-    var title = ""
-    var text  = ""
-    var url   = ""
-    var price = ""
-    var categories = List(("0","-")) ::: Category.findAll.map(cat => (cat.id.toString, ?(cat.l10n.toString))).toList
-    var selectedCatId = ""
-    var merchant = false
-    var online   = false
-    var start = ""
-    var end   = ""
-    var store = ""
-    var dealtypes = Map("merchant" -> 0, "online" -> 1)
-    var dealtype  = ""
-    
-    def submit() = {
-      println("Deal Type to" + dealtype)
-      if(title=="") S.error("Tytuł nie może być pusty")
-      //if(text=="")  S.error("Opis nie może być pusty")
-      else {
-        val deal = Deal.create.date(new java.util.Date).title(title).text(text).url(url).price(price)
-        deal.save
-        S.redirectTo("/")
-      }
-    }
-    bind("deal",in,
-				"title" -> SHtml.text("", parm => title=parm, ("size","55")),
-				"dealtype" -> SHtml.radio(dealtypes.keys.toList, Empty, dt => dealtype=dt.toString).
-				              flatMap(c => (<label>{c.xhtml} {?(c.key.toString)}</label>)),
-				"url" -> SHtml.text("", parm => url=parm, ("size","55")),
-				"price" -> SHtml.text("", parm => price=parm, ("size","10")),
-				"text" -> SHtml.textarea("", parm => text=parm, ("id", "markitup"), "cols"->"80", "rows"-> "10"),
-				"category" -> SHtml.select(categories, Empty, cat => selectedCatId = cat.toString),
-				"start" -> SHtml.text("", parm => start=parm, ("class", "datepicker")),
-				"end" -> SHtml.text("", parm => end=parm, ("class", "datepicker")),
-				"imageUpload" -> SHtml.fileUpload(img => fileUpload(Full(img))),
-				"submit" -> SHtml.submit(?("submit"), submit)
-			)
-  }
+class Deals {
   
   def edit(in: NodeSeq): NodeSeq = {
     val dealId = S.param("dealid").map(_.toLong) openOr S.redirectTo("/404.html")
@@ -201,12 +237,6 @@ class Deals extends PaginatorSnippet[Deal] {
       case _ => Text(?("Nie znaleziono żadnych ofert"))
     }
   }
-  
-  def listHot(in: NodeSeq): NodeSeq = list(in, pageHotDeals)
-  def listSpecial(in: NodeSeq): NodeSeq = list(in, pageSpecialDeals)
-  def listUpcoming(in: NodeSeq): NodeSeq = list(in, pageUpcomingDeals)
-  def listMerchant(in: NodeSeq): NodeSeq = list(in, pageMerchantDeals)
-  def listOnline(in: NodeSeq): NodeSeq = list(in, pageOnlineDeals)
   
   def list(in: NodeSeq, deals: List[Deal]): NodeSeq = {
 
@@ -331,9 +361,11 @@ class Deals extends PaginatorSnippet[Deal] {
   }
 
 }
+
+
 object imageFile extends RequestVar[Box[FileParamHolder]](Empty)
 object DealSubmit extends Wizard {
-  val stepOne = new Screen {
+  val form = new Screen {
     val title = 
       field(?("title"), "", 
         valMinLen(3, S ? "Title too short"),
@@ -344,6 +376,9 @@ object DealSubmit extends Wizard {
     
     val dealType = 
       radio(?("dealtype"), "", Map(?("merchant")->0,?("online")->1).keys.toList)
+    
+    val url = 
+      field(?("url"), "")
       
     val startDate =
       field(?("start"), "", FormParam("class"->"datepicker"))
@@ -376,64 +411,95 @@ object DealSubmit extends Wizard {
     override def hasUploadField = true   
     
   }
-  /*val stepTwoOnline = new Screen {
-  
-  }
-  val stepTwoMerchant = new Screen {
-  
-  }*/
+
   def finish() {
-    import java.io.{File,FileOutputStream}
-    def imageSave(img: FileParamHolder): Unit = {
+    import java.util.Date
+    import java.text.SimpleDateFormat
+    def imageSave(img: FileParamHolder, id: Long, deal: Deal): Unit = {
+      import com.thebuzzmedia.imgscalr.Scalr._
+      import java.io.{File,FileOutputStream,InputStream,ByteArrayInputStream}
+      import javax.imageio.ImageIO
+      
       val imagePath = Props.get("upload.imagepath") openOr "/src/main/webapp/images"
-        img.file match {
+      val imageMaxHeight = 400
+      val imageMaxWidth  = 500
+      val thumbMaxHeight = 100
+      val thumbMaxWidth  = 125
+      
+      img.file match {
         case null => println("It is null")
         case x if x.length == 0 => println("File size is 0")
         case x =>{
-          println("We got a file!")
-
-          /**
-           * Set some fields on the Image table
-           
-          fileName.is.map{
-            name => img.is.img_path.set(filePath + "/" + name + fp.fileName.takeRight(4))
+               
+          val mime = img.mimeType
+          if(mime.startsWith("image/")) {
+            val ext = mime match {
+              case mime: String if(mime.endsWith("jpeg"))=> "jpg"
+              case mime: String if(mime.endsWith("png")) => "png"
+              case mime: String if(mime.endsWith("gif")) => "gif"
+              case mime: String => "jpg"
+            }
+            val thumbName = id.toString+"_thumb."+ext
+            val imageName = id.toString+"."+ext
+            
+            if(ImageIO.write(resize(ImageIO.read(img.fileStream), Mode.FIT_TO_WIDTH, imageMaxWidth, imageMaxHeight), ext, new File(imagePath+"/"+imageName))) {
+              deal.imageOrigin(imageName)
+            }
+            if(ImageIO.write(resize(ImageIO.read(img.fileStream), Mode.FIT_TO_WIDTH, thumbMaxWidth, thumbMaxHeight), ext, new File(imagePath+"/"+thumbName))) {
+              deal.imageThumb(thumbName)
+            }
+            deal.save
+          } else {
+            S.error(?("notImage"))
           }
-
-          img.is.mime_type.set(fp.mimeType)
-          img.is.sort_order.set(0)
-           */
-          /**
-           * This tell helps save the product_id
-           * on the image table, so you can keep the
-           * relationship
-           */
-
-          /*product.is.images += img
-          product.is.save*/
-
-
-          val oFile = new File(imagePath, img.fileName)
-              val output = new FileOutputStream(oFile)
-              output.write(img.file)
-              output.close()
-          println("File uploaded!")
-          S.notice("Thanks for the upload")
         }
       }
     }
-    
-    println(imageFile.is)
-    
-    imageFile.is match {
-      case image => {
-        imageFile.is.map{ file => imageSave(file) }
-        println("The RequestVar content is: %s".format(imageFile.is))
+    val deal = Deal.create
+    val format = new SimpleDateFormat("dd/MM/yyyy")
+    if(form.startDate.trim!="") {
+      try {
+        val startDate: Date = format.parse(form.startDate)
+        deal.start(startDate)
+      } catch {
+        case _ => S.error("Bad date format")
       }
-      
     }
-    S.notice("Title: "+stepOne.title)
-    S.notice("Price: "+stepOne.price)
-    S.notice("Type:  "+stepOne.dealType)
+    if(form.endDate.trim!="") {
+      try {
+        val endDate: Date =  format.parse(form.endDate)
+        deal.expire(endDate)
+      } catch {
+        case _ => S.error("Bad date format")
+      }
+    }
+    deal.date(new java.util.Date).title(form.title).text(form.description)
+    if(form.dealType==0) {
+      deal.merchant(true).online(false)
+    } else {
+      deal.merchant(false).online(true)
+    }
+    if(form.selectedCat != 0L && Category.withIdExist_?(form.selectedCat)) {
+      deal.category(form.selectedCat)
+    }
+    User.currentUserId match {
+      case Full(id) => deal.userid(id.toLong)
+      case _ => println("not loggedin?")
+    }
+    deal.url(form.url).price(form.price).published(true)
+    deal.validate 
+    deal.save
+    if(deal.saved_?) {
+      val dealId: Long = deal.id
+      imageFile.is match {
+        case image => imageFile.is.map{ file => imageSave(file, dealId, deal) }   
+      }
+      val url = Deal.toPermalink(deal.title)
+      println("***")
+      println("Adres to: "+url)
+      println("***")
+      S.redirectTo(url)
+    }
   }
 }
 
