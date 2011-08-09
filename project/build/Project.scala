@@ -19,8 +19,12 @@ class LiftProject(info: ProjectInfo) extends DefaultWebProject(info) {
   val textile   = "net.liftweb" %% "lift-textile" % liftVersion % "compile"
   val postgresql= "postgresql" % "postgresql" % "9.0-801.jdbc4" % "compile"
   
-  val databinder_net   = "databinder.net repository" at "http://databinder.net/repo"
-  val dispatch_twitter = "net.databinder" %% "dispatch-twitter" % "0.7.7"
+  val databinder_net = "databinder.net repository" at "http://databinder.net/repo"
+  val dispatch = "net.databinder" %% "dispatch-http" % "0.8.3"
+  val dispatchTwitter = "net.databinder" %% "dispatch-twitter" % "0.8.3"
+  
+  //val thebuzzmedia_com = "The Buzz Media Maven Repository" at "http://maven.thebuzzmedia.com"
+  //val scalr = "com.thebuzzmedia" %% "imgscalr-lib" % "3.1" % "compile"
   
   /**
    * Maven repositories
