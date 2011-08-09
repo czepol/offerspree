@@ -23,6 +23,7 @@ class DealsHot extends Deals with PaginatorSnippet[Deal] {
   override def page = Deal.findAll(
     StartAt(curPage*itemsPerPage), 
     MaxRows(itemsPerPage),
+    By(Deal.published, true),
     OrderBy(Deal.date, Descending)
   )
   
@@ -51,6 +52,7 @@ class DealsSpecial extends Deals with PaginatorSnippet[Deal] {
   override def page = Deal.findAll(
     StartAt(curPage*itemsPerPage), 
     MaxRows(itemsPerPage),
+    By(Deal.published, true),
     OrderBy(Deal.date, Descending)
   )
   
