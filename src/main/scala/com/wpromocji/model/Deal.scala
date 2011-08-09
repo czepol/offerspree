@@ -142,7 +142,7 @@ class Deal extends LongKeyedMapper[Deal]
   
   def imageLink(name: String) = name match {
     case url: String if url.startsWith("http") => url
-    case name: String => S.uri+"image/"+name
+    case name: String => "/image/"+name
     case _ => "/img/125x100.png"
   }
   

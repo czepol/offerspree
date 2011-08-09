@@ -495,7 +495,7 @@ object DealSubmit extends Wizard {
       imageFile.is match {
         case image => imageFile.is.map{ file => imageSave(file, dealId, deal) }   
       }
-      val url = Deal.toPermalink(deal.title)
+      val url = "/"+dealId.toString+"/"+Deal.toPermalink(deal.title)+".html"
       println("***")
       println("Adres to: "+url)
       println("***")
