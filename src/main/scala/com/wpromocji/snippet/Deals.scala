@@ -15,7 +15,8 @@ import net.liftweb.wizard._
 import util._
 import S.?
 
-class DealsHot extends PaginatorSnippet[Deal] {
+
+class DealsHot extends Deals with PaginatorSnippet[Deal] {
   override def itemsPerPage = 5
   override def count = Deal.count
   
@@ -40,10 +41,10 @@ class DealsHot extends PaginatorSnippet[Deal] {
     }
   }
   
-  def list(in: NodeSeq) = Deals.list(in, page)
+  def list(in: NodeSeq): NodeSeq = super.list(in, page)
 }
 
-class DealsSpecial extends PaginatorSnippet[Deal] {
+class DealsSpecial extends Deals with PaginatorSnippet[Deal] {
   override def itemsPerPage = 5
   override def count = Deal.count
   
@@ -68,10 +69,10 @@ class DealsSpecial extends PaginatorSnippet[Deal] {
     }
   }
   
-  def list(in: NodeSeq) = Deals.list(in, page)
+  def list(in: NodeSeq): NodeSeq = super.list(in, page)
 }
 
-class DealsUpcoming extends PaginatorSnippet[Deal] {
+class DealsUpcoming extends Deals with PaginatorSnippet[Deal] {
   override def itemsPerPage = 5
   override def count = Deal.count(By(Deal.published, false))
   
@@ -97,10 +98,10 @@ class DealsUpcoming extends PaginatorSnippet[Deal] {
     }
   }
   
-  def list(in: NodeSeq) = Deals.list(in, page)
+  def list(in: NodeSeq): NodeSeq = super.list(in, page)
 }
 
-class DealsMerchant extends PaginatorSnippet[Deal] {
+class DealsMerchant extends Deals with PaginatorSnippet[Deal] {
   override def itemsPerPage = 5
   override def count = 
     Deal.count(By(Deal.published, true),By(Deal.merchant, true))
@@ -128,10 +129,10 @@ class DealsMerchant extends PaginatorSnippet[Deal] {
     }
   }
   
-  def list(in: NodeSeq) = Deals.list(in, page)
+  def list(in: NodeSeq): NodeSeq = super.list(in, page)
 }
 
-class DealsOnline extends PaginatorSnippet[Deal] {
+class DealsOnline extends Deals with PaginatorSnippet[Deal] {
   override def itemsPerPage = 5
   override def count = 
     Deal.count(By(Deal.online, true),By(Deal.published, true))
@@ -159,7 +160,7 @@ class DealsOnline extends PaginatorSnippet[Deal] {
     }
   }
   
-  def list(in: NodeSeq) = Deals.list(in, page)
+  def list(in: NodeSeq): NodeSeq = super.list(in, page)
 }
 
 class Deals {
@@ -323,7 +324,7 @@ class Deals {
     }
   }
    
-  def adminCreate(in: NodeSeq): NodeSeq = {
+  /*def adminCreate(in: NodeSeq): NodeSeq = {
     Deal.create.toForm(Full("Submit"), { _.save })
   }
   
@@ -359,7 +360,7 @@ class Deals {
   def adminView(in: NodeSeq): NodeSeq = {
     Text("")
   }
-
+  */
 }
 
 
