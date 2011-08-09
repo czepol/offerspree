@@ -1,17 +1,27 @@
 <lift:surround with="default" at="content">
 <lift:Users.oauthSignIn form="POST">
-
-<lift:msgs />
-<table>
-<tr><td>Username</td><td><user:username /></td></tr>
-<tr><td>Email</td><td><user:email /></td></tr>
-<tr><td>First Name</td><td><user:firstname /></td></tr>
-<tr><td>Last Name</td><td><user:lastname /></td></tr>
-<tr><td>Password</td><td><user:password /></td></tr>
-<tr><td>Passconf</td><td><user:passconf /></td></tr>
-<tr><td>&nbsp;</td><td><user:submit /></td></tr>
-</table>
-<user:profile />
-<user:locale />
+<provider:facebook>
+	<table>
+	<tr><td>Username</td><td><user:username /></td></tr>
+	<tr><td>Email</td><td><user:email /></td></tr>
+	<tr><td>First Name</td><td><user:firstname /></td></tr>
+	<tr><td>Last Name</td><td><user:lastname /></td></tr>
+	<tr><td>Password</td><td><user:password /></td></tr>
+	<tr><td>Passconf</td><td><user:passconf /></td></tr>
+	<tr><td>&nbsp;</td><td><user:submit /></td></tr>
+	</table>
+	<user:profile />
+	<user:locale />
+</provider:facebook>
+<provider:twitter>
+	<table>
+	<tr><td>Username</td><td><user:username /></td></tr>
+	<tr><td>Email</td><td><user:email /></td></tr>
+	<tr><td>Password</td><td><user:password /></td></tr>
+	<tr><td>Passconf</td><td><user:passconf /></td></tr>
+	<tr><td>&nbsp;</td><td><user:submit /></td></tr>
+	</table>
+	<user:locale />
+</provider:twitter>
 </lift:Users.oauthSignIn>
 </lift:surround>
