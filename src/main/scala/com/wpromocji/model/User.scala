@@ -194,6 +194,8 @@ class User extends MegaProtoUser[User]
   object twitterProfile extends MappedString(this, 128) 
   object twuid extends MappedInt(this)
   
+  object location extends MappedString(this, 128)
+  
   object deals extends MappedOneToMany(Deal, Deal.userid, 
     OrderBy(Deal.start, Descending))
     
