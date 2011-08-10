@@ -22,13 +22,17 @@ with CRUDify[Long,Location] {
   override def deleteMenuLocParams  = LocGroup("admin") :: Nil
   
   def loginAndComeBack = {
-    val uri = S.uri 
-    RedirectWithState("/user/login", RedirectState(() => User.loginReferer(uri))) 
+    if(User.loggedIn_?) {
+      S.error("Brak uprawnień")
+      () => RedirectResponse("/")
+    } else {
+      val uri = S.uri 
+      RedirectWithState("/user/login", RedirectState(() => User.loginReferer(uri))) 
+    }
   }
   
-  val loggedIn = If(User.loggedIn_? _, loginAndComeBack _)
-  val superUserLoggedIn = If(User.superUser_? _, {S.error("Nie masz uprawnień"); S.redirectTo("/")})
-  override protected def addlMenuLocParams: List[Loc.AnyLocParam] = loggedIn :: superUserLoggedIn :: Nil
+  val superUserLoggedIn = If(User.superUser_? _, loginAndComeBack _)
+  override protected def addlMenuLocParams: List[Loc.AnyLocParam] = superUserLoggedIn :: Nil
   
 }
 
