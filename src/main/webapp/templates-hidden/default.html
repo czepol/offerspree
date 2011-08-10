@@ -40,6 +40,23 @@
 		<div id="container" class="row">
           <div class="header">
 			  <h1 class="logo"><a href="/">Offer Spree</a></h1>
+			  <div id="userLocation" class="userlocation">
+				<lift:Users.autodetect form="POST">
+				  <div id="autodetect">
+				    <input type="hidden" name="latitude" value="" />
+				    <input type="hidden" name="longitude" value="" />
+				    <input type="submit" value="Wykryj" />
+				  </div>
+				</lift:Users.autodetect>
+				<lift:Users.location>
+				  <guest:location>
+				    <location:input />
+				  </guest:location>
+				  <user:location>
+				    <location:input />
+				  </user:location>
+				</lift:Users.location>
+			  </div>
 			  <div class="languages">
 				<ul>
 				  <li><a href="?lang=en"><img src="/img/gb.png" alt="gb" /></a></li>

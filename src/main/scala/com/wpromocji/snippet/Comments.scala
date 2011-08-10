@@ -95,45 +95,6 @@ class Comments extends PaginatorSnippet[Comment] {
       case _ => <p><a href={User.loginAndRedirectURL}>Zaloguj się</a> aby komentować</p>
     }
   }
-  
-  def adminCreate(in: NodeSeq): NodeSeq = {
-    Comment.create.toForm(Full("Submit"), { _.save })
-  }
-  
-  def adminEdit(in: NodeSeq): NodeSeq = {
-    val commentId = S.param("commentid").map(_.toLong) openOr S.redirectTo("/404.html")
-    if(Comment.withIdExist_?(commentId)) {
-      Comment.findAll(By(Comment.id, commentId)).head.toForm(Full("Submit"), { _.save })
-    } else {
-      S.redirectTo("/404.html")
-    }
-  }
-  
-  def adminList(in: NodeSeq): NodeSeq = {
-    page.flatMap(
-      comment => {
-        bind("comment", in,
-          "commentid" -> comment.id,
-          "deal" -> Deal.getTitleById(comment.dealid),
-          "author" -> User.getUsernameById(comment.userid),
-          "published" -> comment.published,
-          "edit" -> <a href={"/admin/comments/edit/"+comment.id}>Edit</a>,
-          "view" -> <a href={"/admin/comments/view/"+comment.id}>View</a>,
-          "delete" -> <a href={"/admin/comments/delete/"+comment.id}>Delete</a>
-        )
-      }
-    )
-  }
-  
-  def adminDelete(in: NodeSeq): NodeSeq = {
-    Text("")
-  }
-  
-  def adminView(in: NodeSeq): NodeSeq = {
-    Text("")
-  }
-
-
 }
 
 }

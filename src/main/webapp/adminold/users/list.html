@@ -1,0 +1,50 @@
+<lift:surround with="default-admin" at="content">
+<div id="main_panel_container" class="left">
+	<div class="section" style="width:920px">
+	<a href="/admin/users/create"><button style="margin:10px 0;">New user</button></a>
+	<table id="table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Username</th>
+				<th>E-mail</th>
+				<th>Superuser</th>
+				<th>Moderator</th>
+				<th>Validated</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+		<lift:Users.adminList>
+			<tr>
+				<td><user:userid /></td>
+				<td><user:username /></td>
+				<td><user:email /></td>
+				<td><user:superuser /></td>
+				<td><user:moderator /></td>
+				<td><user:validated /></td>
+				<td><user:edit /> | <user:view /> | <user:delete /></td>
+			</tr>
+		</lift:Users.adminList>
+		</tbody>
+		<tfoot>
+			<tr>
+				<th>ID</th>
+				<th>Username</th>
+				<th>E-mail</th>
+				<th>Superuser</th>
+				<th>Moderator</th>
+				<th>Validated</th>
+				<th>Actions</th>
+			</tr>
+		</tfoot>
+	</table>
+	<lift:Users.paginate>
+		<div class="pagination">
+		<span class="pages"><nav:records /></span><nav:first/><nav:prev /><nav:allpages/><nav:next/><nav:last/>
+		</div>
+	</lift:Users.paginate>
+	</div>
+
+</div>
+</lift:surround>

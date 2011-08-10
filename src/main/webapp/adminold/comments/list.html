@@ -1,0 +1,50 @@
+<lift:surround with="default-admin" at="content">
+<div id="main_panel_container" class="left">
+	<div class="section" style="width:920px">
+	<a href="/admin/comments/create"><button style="margin:10px 0;">New comment</button></a>
+	<table id="table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>Author</th>
+				<th>Deal</th>
+				<th>Published</th>
+				<th>Edit</th>
+				<th>View</th>
+				<th>Delete</th>
+			</tr>
+		</thead>
+		<tbody>
+		<lift:Comments.adminList>
+			<tr>
+				<td><comment:commentid /></td>
+				<td><comment:author /></td>
+				<td><comment:deal /></td>
+				<td><comment:published /></td>
+				<td><comment:edit /></td>
+				<td><comment:view /></td>
+				<td><comment:delete /></td>
+			</tr>
+		</lift:Comments.adminList>
+		</tbody>
+		<tfoot>
+			<tr>
+				<th>ID</th>
+				<th>Author</th>
+				<th>Deal</th>
+				<th>Published</th>
+				<th>Edit</th>
+				<th>View</th>
+				<th>Delete</th>
+			</tr>
+		</tfoot>
+	</table>
+	<lift:Comments.paginate>
+		<div class="pagination">
+		<span class="pages"><nav:records /></span><nav:first/><nav:prev /><nav:allpages/><nav:next/><nav:last/>
+		</div>
+	</lift:Comments.paginate>
+	</div>
+
+</div>
+</lift:surround>

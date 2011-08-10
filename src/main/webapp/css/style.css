@@ -171,6 +171,17 @@ input {
   position: relative;
 }
 
+.userlocation {
+  position: absolute;
+  right: 90px;
+  top: 0;
+}
+
+#autodetect {
+position: absolute;
+right: 170px;
+}
+
 .languages {
   position: absolute;
   right: 0;

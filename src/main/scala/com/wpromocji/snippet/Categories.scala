@@ -33,44 +33,6 @@ class Categories extends PaginatorSnippet[Category] {
       <a href={pageUrl(newFirst)}>{ns}</a>
     }
   }
-
-	
-	def adminCreate(in: NodeSeq): NodeSeq = {
-	  Category.create.toForm(Full("Submit"), { _.save })
-	}
-	
-	def adminEdit(in: NodeSeq): NodeSeq = {
-    val categoryId = S.param("categoryid").map(_.toLong) openOr S.redirectTo("/404.html")
-    if(Category.withIdExist_?(categoryId)) {
-      Category.findAll(By(Category.id, categoryId)).head.toForm(Full("Submit"), { _.save })
-    } else {
-      S.redirectTo("/404.html")
-    }
-	}
-	
-	def adminList(in: NodeSeq): NodeSeq = {
-    page.flatMap(
-      category => {
-        bind("category", in,
-          "categoryid" -> category.id,
-          "title" -> category.title,
-          "slug" -> category.slug,
-          "edit" -> <a href={"/admin/categories/edit/"+category.id}>Edit</a>,
-          "view" -> <a href={"/admin/categories/view/"+category.id}>View</a>,
-          "delete" -> <a href={"/admin/categories/delete/"+category.id}>Delete</a>
-        )
-      }
-    )
-	}
-	
-	def adminDelete(in: NodeSeq): NodeSeq = {
-	  Text("")
-	}
-	
-	def adminView(in: NodeSeq): NodeSeq = {
-	  Text("")
-	}
-	
 }
 
 }
