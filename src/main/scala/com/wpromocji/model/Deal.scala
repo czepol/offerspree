@@ -8,6 +8,7 @@ import net.liftweb.mapper._
 import net.liftweb.http._
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
+
 import java.util.Date
 
 /**
@@ -16,10 +17,27 @@ import java.util.Date
  * @since 0.1
  */
 
-object Deal extends Deal
-            with LongKeyedMetaMapper[Deal] {
+object Deal extends Deal with LongKeyedMetaMapper[Deal] 
+with CRUDify[Long, Deal] {
   
   override def dbTableName = "deals"
+
+  override def pageWrapper(body: NodeSeq) =
+    <lift:surround with="admin" at="content">{body}</lift:surround>
+  override def calcPrefix = List("admin",_dbTableNameLC)
+  override def showAllMenuLocParams = LocGroup("admin") :: Nil
+  override def createMenuLocParams  = LocGroup("admin") :: Nil
+  override def viewMenuLocParams    = LocGroup("admin") :: Nil
+  override def editMenuLocParams    = LocGroup("admin") :: Nil
+  override def deleteMenuLocParams  = LocGroup("admin") :: Nil
+  
+  def loginAndComeBack = {
+    val uri = S.uri 
+    RedirectWithState("/user/login", RedirectState(() => User.loginReferer(uri))) 
+  }
+  
+  val superUserLoggedIn = If(User.superUser_? _,loginAndComeBack _)
+  override protected def addlMenuLocParams: List[Loc.AnyLocParam] = superUserLoggedIn :: Nil
 
 }
 

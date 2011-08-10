@@ -65,48 +65,20 @@ class Boot {
       Menu.i("Dashboard") / "user" / "dashboard" >> loggedIn,
       Menu.i("User profile") / "user" / "profile" >> Hidden,
       Menu.i("Change language") / "lang" >> Hidden,
-      Menu.i("User Oauth Signin") / "user" / "oauth" >> Hidden
+      Menu.i("User Oauth Signin") / "user" / "oauth" >> Hidden,
+      Menu.i("Admin badges") / "admin" / "badges" >> Hidden submenus(Badge.menus: _*),
+      Menu.i("Admin categories") / "admin" / "categories" >> Hidden submenus(Category.menus: _*),
+      Menu.i("Admin comments") / "admin" / "comments" >> Hidden submenus(Comment.menus: _*),
+      Menu.i("Admin deals") / "admin" / "deals" >> Hidden submenus(Deal.menus: _*),
+      Menu.i("Admin locations") / "admin" / "locations" >> Hidden submenus(Location.menus: _*),
+      Menu.i("Admin merchants") / "admin" / "merchants" >> Hidden submenus(Merchant.menus: _*),
+      Menu.i("Admin online stores") / "admin" / "online-stores" >> Hidden submenus(OnlineStore.menus: _*),
+      Menu.i("Admin stores") / "admin" / "stores" >> Hidden submenus(Store.menus: _*),
+      Menu.i("Admin tags") / "admin" / "tags" >> Hidden submenus(Tag.menus: _*),
+      Menu.i("Admin votes") / "admin" / "votes" >> Hidden submenus(Vote.menus: _*)
     ) ::: User.sitemap ::: Omniauth.sitemap
     
-    val adminMenus = List(
-      Menu.i("Admin") / "admin" / "index" >> superUserLoggedIn >> LocGroup("admin"),
-      Menu.i("Admin login") / "admin" / "login",
-      Menu.i("Admin logout") / "admin" / "logout" >> superUserLoggedIn,
-      Menu.i("Admin Deals") / "admin" / "deals" >> superUserLoggedIn >> LocGroup("admin") 
-        submenus(
-          Menu.i("Admin List Deals") / "admin" / "deals" / "list" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Create Deals") / "admin" / "deals" / "create" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin View Deal") / "admin" / "deals" / "view" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Edit Deal") / "admin" / "deals" / "edit" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Delete Deal") / "admin" / "deals" / "delete" >> Hidden >> superUserLoggedIn >> LocGroup("admin")
-        ),
-      Menu.i("Admin Users") / "admin" / "users" >> superUserLoggedIn >> LocGroup("admin")
-        submenus(
-          Menu.i("Admin List Users") / "admin" / "users" / "list" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Create User") / "admin" / "users" / "create" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin View User") / "admin" / "users" / "view" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Edit User") / "admin" / "users" / "edit" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Delete User") / "admin" / "users" / "delete" >> Hidden >> superUserLoggedIn >> LocGroup("admin")
-        ),
-      Menu.i("Admin Categories") / "admin" / "categories" >> superUserLoggedIn >> LocGroup("admin")
-        submenus(
-          Menu.i("Admin List Categories") / "admin" / "categories" / "list" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Create Category") / "admin" / "categories" / "create" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin View Category") / "admin" / "categories" / "view" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Edit Category") / "admin" / "categories" / "edit" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Delete Category") / "admin" / "categories" / "delete" >> Hidden >> superUserLoggedIn >> LocGroup("admin")
-        ),
-      Menu.i("Admin Comments") / "admin" / "comments" >> superUserLoggedIn >> LocGroup("admin")
-        submenus(
-          Menu.i("Admin List Comments") / "admin" / "comments" / "list" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Create Comment") / "admin" / "comments" / "create" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin View Comment") / "admin" / "comments" / "view" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Edit Comment") / "admin" / "comments" / "edit" >> Hidden >> superUserLoggedIn >> LocGroup("admin"),
-          Menu.i("Admin Delete Comment") / "admin" / "comments" / "delete" >> Hidden >> superUserLoggedIn >> LocGroup("admin")
-        )
-    )
-    
-    val sitemaps = entries ++ adminMenus
+    val sitemaps = entries
     
     LiftRules.setSiteMap(SiteMap(sitemaps: _*))
     
@@ -185,66 +157,7 @@ class Boot {
       case RewriteRequest(
         ParsePath(List("deal", dealid, slug), "html", true, false), _, _) => 
             RewriteResponse(List("deal", "show"), Map("dealid" -> urlDecode(dealid), "slug" -> urlDecode(slug)))
-      
-      // Example #/admin/users/edit/124     
-      case RewriteRequest(
-        ParsePath(List("admin", "users", "edit", userid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "users", "edit"), Map("userid" -> urlDecode(userid)))
-      
-      // Example #/admin/users/delete/124      
-      case RewriteRequest(
-        ParsePath(List("admin", "users", "delete", userid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "users", "delete"), Map("userid" -> urlDecode(userid)))
-      
-      // Example #/admin/users/view/124
-      case RewriteRequest(
-        ParsePath(List("admin", "users", "view", userid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "users", "view"), Map("userid" -> urlDecode(userid)))
-      
-      // Example #/admin/deals/edit/1523      
-      case RewriteRequest(
-        ParsePath(List("admin", "deals", "edit", dealid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "deals", "edit"), Map("dealid" -> urlDecode(dealid)))
 
-      // Example #/admin/deals/delete/1523
-      case RewriteRequest(
-        ParsePath(List("admin", "deals", "delete", dealid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "deals", "delete"), Map("dealid" -> urlDecode(dealid)))
-
-      // Example #/admin/deals/view/1523
-      case RewriteRequest(
-        ParsePath(List("admin", "deals", "view", dealid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "deals", "view"), Map("dealid" -> urlDecode(dealid)))
-      
-      // Example #/admin/categories/edit/15
-      case RewriteRequest(
-        ParsePath(List("admin", "categories", "edit", categoryid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "categories", "edit"), Map("categoryid" -> urlDecode(categoryid)))
-      
-      // Example #/admin/categories/delete/15
-      case RewriteRequest(
-        ParsePath(List("admin", "categories", "delete", categoryid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "categories", "delete"), Map("categoryid" -> urlDecode(categoryid)))
-      
-      // Example #/admin/categories/view/15
-      case RewriteRequest(
-        ParsePath(List("admin", "categories", "view", categoryid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "categories", "view"), Map("categoryid" -> urlDecode(categoryid)))
-      
-      // Example #/admin/comments/edit/142115
-      case RewriteRequest(
-        ParsePath(List("admin", "comments", "edit", commentid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "comments", "edit"), Map("commentid" -> urlDecode(commentid)))
-      
-      // Example #/admin/comments/delete/142115
-      case RewriteRequest(
-        ParsePath(List("admin", "comments", "delete", commentid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "comments", "delete"), Map("commentid" -> urlDecode(commentid)))
-      
-      // Example #/admin/comments/view/142115
-      case RewriteRequest(
-        ParsePath(List("admin", "comments", "view", commentid), _, _, _), _, _) =>
-            RewriteResponse(List("admin", "comments", "view"), Map("commentid" -> urlDecode(commentid)))
     }
 
     // Enable HTML5 mode

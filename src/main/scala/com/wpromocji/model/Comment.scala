@@ -1,8 +1,11 @@
 package com.wpromocji.model
 
 import scala.xml.{NodeSeq,Text}
+import net.liftweb.http._
 import net.liftweb.mapper._
 import net.liftweb.common._
+import net.liftweb.sitemap._
+import net.liftweb.sitemap.Loc._
 import com.wpromocji.util.Gravatar
 
 /**
@@ -11,9 +14,27 @@ import com.wpromocji.util.Gravatar
  * @since 0.1
  */
 
-object Comment extends Comment with LongKeyedMetaMapper[Comment] {
+object Comment extends Comment with LongKeyedMetaMapper[Comment] 
+with CRUDify[Long,Comment] {
 
   override def dbTableName = "comments"
+
+  override def pageWrapper(body: NodeSeq) =
+    <lift:surround with="admin" at="content">{body}</lift:surround>
+  override def calcPrefix = List("admin",_dbTableNameLC)
+  override def showAllMenuLocParams = LocGroup("admin") :: Nil
+  override def createMenuLocParams  = LocGroup("admin") :: Nil
+  override def viewMenuLocParams    = LocGroup("admin") :: Nil
+  override def editMenuLocParams    = LocGroup("admin") :: Nil
+  override def deleteMenuLocParams  = LocGroup("admin") :: Nil
+  
+  def loginAndComeBack = {
+    val uri = S.uri 
+    RedirectWithState("/user/login", RedirectState(() => User.loginReferer(uri))) 
+  }
+  
+  val superUserLoggedIn = If(User.superUser_? _,loginAndComeBack _)
+  override protected def addlMenuLocParams: List[Loc.AnyLocParam] = superUserLoggedIn :: Nil
 
 }
 
