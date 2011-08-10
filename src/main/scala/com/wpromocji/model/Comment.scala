@@ -33,8 +33,9 @@ with CRUDify[Long,Comment] {
     RedirectWithState("/user/login", RedirectState(() => User.loginReferer(uri))) 
   }
   
-  val superUserLoggedIn = If(User.superUser_? _,loginAndComeBack _)
-  override protected def addlMenuLocParams: List[Loc.AnyLocParam] = superUserLoggedIn :: Nil
+  val loggedIn = If(User.loggedIn_? _, loginAndComeBack _)
+  val superUserLoggedIn = If(User.superUser_? _, S.error("Nie masz uprawnień"))
+  override protected def addlMenuLocParams: List[Loc.AnyLocParam] = loggedIn :: superUserLoggedIn :: Nil
 
 }
 
