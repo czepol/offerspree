@@ -176,7 +176,7 @@ class User extends MegaProtoUser[User]
     override def defaultValue = 1.0
   }
   
-  object userSite extends MappedString(this,256) {
+  object userSite extends MappedString(this,128) {
     override def displayName = "WWW"
   }
   
@@ -188,8 +188,11 @@ class User extends MegaProtoUser[User]
     override def defaultValue = false
   }
   
-  object facebookProfile extends MappedString(this, 256)
-  object twitterProfile extends MappedString(this, 256) 
+  object facebookProfile extends MappedString(this, 128)
+  object fbuid extends MappedInt(this)
+  
+  object twitterProfile extends MappedString(this, 128) 
+  object twuid extends MappedInt(this)
   
   object deals extends MappedOneToMany(Deal, Deal.userid, 
     OrderBy(Deal.start, Descending))
@@ -202,7 +205,7 @@ BookAuthors, BookAuthors.author, BookAuthors.book, Book)
 
   object profiles extends MappedManyToMany(
     CompanyAdmins, CompanyAdmins.admin, CompanyAdmins.company, CompanyProfile)
-
+  
   object loginReferer extends SessionVar("/") 
   
   def loginAndRedirectURL = "/user/login?next=" + S.uri
@@ -220,14 +223,12 @@ BookAuthors, BookAuthors.author, BookAuthors.book, Book)
       case Full(user) => user.userName.toString
       case _ => "Konto usunięte"
     }
- 
   
   def withIdExist_?(userId: Long): Boolean = 
     User.find(By(User.id, userId)) match {
       case Full(user) => true
       case _ => false
     }
-
   
   def uniqueEmail_?(email: String): Boolean = 
     User.find(By(User.email, email)) match {
