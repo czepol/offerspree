@@ -248,6 +248,7 @@ class Users extends PaginatorSnippet[User] {
         UserLocation(city)
         User.currentUser match {
           case Full(user) => User.currentUser.open_!.location(city).save
+          case _ => in
         }
       }
     }
