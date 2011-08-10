@@ -34,7 +34,7 @@ with CRUDify[Long,Comment] {
   }
   
   val loggedIn = If(User.loggedIn_? _, loginAndComeBack _)
-  val superUserLoggedIn = If(User.superUser_? _, S.error("Nie masz uprawnień"); S.redirectTo("/"))
+  val superUserLoggedIn = If(User.superUser_? _, {S.error("Nie masz uprawnień"); S.redirectTo("/")})
   override protected def addlMenuLocParams: List[Loc.AnyLocParam] = loggedIn :: superUserLoggedIn :: Nil
 
 }
