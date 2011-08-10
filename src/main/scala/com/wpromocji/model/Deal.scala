@@ -34,7 +34,7 @@ with CRUDify[Long, Deal] {
   def loginAndComeBack = {
     if(User.loggedIn_?) {
       S.error("Brak uprawnień")
-      () => RedirectResponse("/")
+      RedirectResponse("/")
     } else {
       val uri = S.uri 
       RedirectWithState("/user/login", RedirectState(() => User.loginReferer(uri))) 
