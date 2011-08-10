@@ -30,7 +30,7 @@ with CRUDify[Long,Badge] {
   }
   
   val loggedIn = If(User.loggedIn_? _, loginAndComeBack _)
-  val superUserLoggedIn = If(User.superUser_? _, S.error("Nie masz uprawnień"))
+  val superUserLoggedIn = If(User.superUser_? _, S.error("Nie masz uprawnień"); S.redirectTo("/"))
   override protected def addlMenuLocParams: List[Loc.AnyLocParam] = loggedIn :: superUserLoggedIn :: Nil
 
   override def dbTableName = "badges"
