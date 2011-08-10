@@ -39,7 +39,7 @@ class Boot {
     Schemifier.schemify(true, Schemifier.infoF _, 
       User, Deal, Badge, UserBadge, Tag, DealTag, 
       Category, Vote, Comment, CompanyProfile, CompanyAdmins,
-      Merchant)
+      Merchant, Store, OnlineStore, Location)
      
     // where to search snippet
     LiftRules.addToPackages("com.wpromocji")
