@@ -1,5 +1,6 @@
-<lift:surround with="default" at="content">
-	<lift:Deals.show>
+<lift:surround with="default-deal" at="content">
+<lift:Deals.show>
+<div id="content">
 	<lift:bind-at name="title">Offer Spree :: <deal:title /></lift:bind-at>
     <div class="deal">
 	  <h4><deal:titleLink /></h4>
@@ -26,13 +27,12 @@
 	  </div>
 	  <div class="clear" />
     </div>
-	</lift:Deals.show>
 	
 	<lift:Deals.navigation>
-	<p>
 		<navigation:nav />
-	</p>
 	</lift:Deals.navigation>
+	
+	<br class="clear" style="padding: 1em 0;" />
 	
 	<lift:Comments.list>
 	<a name="comments"></a>
@@ -56,4 +56,19 @@
 		<form:text />
 		<p><form:submit /></p>
     </lift:Comments.addComment>
+</div>
+<div id="sidebar">
+  <div class="widget">
+  <lift:Deals.storeInfoBox>
+  <storetype:online>
+    <store:online />
+  </storetype:online>
+  <storetype:merchant>
+    <store:merchant />
+  </storetype:merchant>
+  </lift:Deals.storeInfoBox>
+  </div>
+</div>
+<div class="clear" />
+</lift:Deals.show>
 </lift:surround>

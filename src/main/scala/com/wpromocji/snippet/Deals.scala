@@ -1,6 +1,6 @@
 package com.wpromocji {
 package snippet {
-import scala.xml.{NodeSeq,Text}
+import scala.xml.{NodeSeq,Text,Elem}
 import net.liftweb.util.Helpers._
 import net.liftweb.common.{Full,Empty,Box}
 import net.liftweb.http._
@@ -18,7 +18,7 @@ import S.?
 
 class DealsHot extends Deals with PaginatorSnippet[Deal] {
   override def itemsPerPage = 5
-  override def count = Deal.count
+  override def count = Deal.count(By(Deal.published, true))
   
   override def page = Deal.findAll(
     StartAt(curPage*itemsPerPage), 
@@ -241,6 +241,21 @@ class Deals {
     }
   }
   
+  def storeInfoBox(in: NodeSeq): NodeSeq = {
+    val dealId = S.param("dealid").map(_.toLong) openOr S.redirectTo("/404.html")
+    Deal.find(By(Deal.id, dealId)) match {
+      case Full(deal) => 
+        if(deal.merchant==true) {
+          bind("store", chooseTemplate("storetype", "merchant", in), "merchant" -> <h4>To jest test. Merchant store.</h4>)
+        } else if(deal.online==true) {
+          bind("store", chooseTemplate("storetype", "online", in), "online" -> <h4>To jest test. Online store.</h4>)
+        } else {
+          in
+        }
+      case _ => in
+    }
+  }
+  
   def list(in: NodeSeq, deals: List[Deal]): NodeSeq = {
 
     var dealid = ""
@@ -315,10 +330,10 @@ class Deals {
       next = Deal.nextDeal(dealId)
       prev = Deal.prevDeal(dealId)
       bind("navigation", in, "nav" -> {
-      <ul class="nav-deals">
-      {if(next!=0L) Deal.toLink(Deal.getTitleById(next)+" →", next)}
-      {if(prev!=0L) Deal.toLink("← "+Deal.getTitleById(prev), prev)}
-      </ul>
+      <div class="nav-deals">
+      {if(next!=0L) <span style="float: right">{Deal.toLink(Deal.getTitleById(next)+" →", next)}</span>}
+      {if(prev!=0L) <span style="float: left">{Deal.toLink("← "+Deal.getTitleById(prev), prev)}</span>}
+      </div>
       })
     } else {
       println("Nieopublikowany")
@@ -369,6 +384,10 @@ class Deals {
 object imageFile extends RequestVar[Box[FileParamHolder]](Empty)
 object DealSubmit extends Wizard {
   val form = new Screen {
+  
+    override def cancelButton: Elem = <button>{S.?("Cancel")}</button>  
+    override def finishButton: Elem = <button>{S.?("Finish")}</button>  
+  
     val title = 
       field(?("title"), "", 
         valMinLen(3, S ? "Title too short"),
@@ -382,6 +401,9 @@ object DealSubmit extends Wizard {
     
     val url = 
       field(?("url"), "")
+    
+    val merchant = 
+      field(?("merchant"), "", "class"->"autocomplete")
       
     val startDate =
       field(?("start"), "", FormParam("class"->"datepicker"))
@@ -498,9 +520,6 @@ object DealSubmit extends Wizard {
         case image => imageFile.is.map{ file => imageSave(file, dealId, deal) }   
       }
       val url = "/deal/"+dealId.toString+"/"+Deal.toPermalink(deal.title)+".html"
-      println("***")
-      println("Adres to: "+url)
-      println("***")
       S.redirectTo(url)
     }
   }

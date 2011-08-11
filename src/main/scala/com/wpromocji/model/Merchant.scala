@@ -1,10 +1,13 @@
 package com.wpromocji.model
 
-import scala.xml.{NodeSeq}
+import scala.xml.{NodeSeq, Node}
 import net.liftweb.http._
 import net.liftweb.mapper._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
+import net.liftweb.common.{Full}
+import net.liftweb.json._
+import net.liftweb.json.JsonDSL._
 
 object Merchant extends Merchant with LongKeyedMetaMapper[Merchant] 
 with CRUDify[Long,Merchant] {
@@ -36,7 +39,7 @@ with CRUDify[Long,Merchant] {
 }
 
 class Merchant extends LongKeyedMapper[Merchant] 
-               with CreatedUpdated with IdPK {
+with CreatedUpdated with IdPK with OneToMany[Long,Merchant] {
 
   def getSingleton = Merchant
 
@@ -44,7 +47,33 @@ class Merchant extends LongKeyedMapper[Merchant]
   object url extends MappedString(this, 128)
   object description extends MappedText(this)
   object networked extends MappedBoolean(this)
-  //object meta
+  
+  def toJson(id: Long, ver: String): JValue = {
+    if(ver == "1.0") {
+      Merchant.find(By(Merchant.id, id)) match {
+        case Full(merchant) => {
+            ("merchant" -> 
+             ("name" -> merchant.name.toString) ~
+             ("url" -> merchant.url.toString) ~
+             ("description" -> merchant.description.toString))
+        }
+        case _ => ("deal" -> 
+                   ("errors" -> 
+                    ("error" -> "Not found")
+                   )
+                  )
+      }
+    } else {
+      ("deal" ->
+       ("errors" ->
+        ("error" -> "Bad API version")
+       )
+      )
+    }
+  }
+
+  def toXml(id: Long, ver: String): Node = 
+    Xml.toXml(Merchant.toJson(id,ver)).head
 
 }
 

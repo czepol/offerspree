@@ -5,6 +5,7 @@ import net.liftweb.http._
 import net.liftweb.mapper._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
+import net.liftweb.common.{Full}
 
 object Store extends Store with LongKeyedMetaMapper[Store] 
 with CRUDify[Long,Store] {
@@ -48,9 +49,12 @@ class Store extends LongKeyedMapper[Store] with IdPK {
   object latitude extends MappedDouble(this)
   object longitude extends MappedDouble(this)
   
-  //object merchantId extends 
-  
-
+  object merchantid extends LongMappedMapper(this, Merchant) {
+    override def validSelectValues = 
+      Full(Merchant.findMap(OrderBy(Merchant.id, Ascending)) {
+        case m: Merchant => Full(m.id.is -> m.name.is)
+      })
+	}
 
 }
 

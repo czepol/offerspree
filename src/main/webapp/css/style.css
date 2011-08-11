@@ -173,13 +173,18 @@ input {
 
 .userlocation {
   position: absolute;
-  right: 90px;
+  right: 150px;
   top: 0;
 }
 
+.nav-deals { 
+  padding: 1em 0;
+}
+
 #autodetect {
-position: absolute;
-right: 170px;
+  position: absolute;
+  right: 90px;
+  top: 0;
 }
 
 .languages {
