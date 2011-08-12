@@ -91,6 +91,7 @@ class Boot {
     LiftRules.localeCalculator = localeCalculator _
     
     LiftRules.dispatch.append(DealAPI)
+    LiftRules.dispatch.append(MerchantAPI)
 
     val imagePath = Props.get("upload.imagepath") openOr "/src/main/webapp/images"
     

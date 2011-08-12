@@ -9,6 +9,7 @@ import net.liftweb.http.js._
 import net.liftweb.http.js.JsCmds._
 import net.liftweb.http.js.jquery.JqJsCmds.FadeIn
 import net.liftweb.http.js.JE.JsRaw
+import net.liftweb.http.provider.{HTTPRequest,HTTPCookie}
 import net.liftweb.mapper._
 import com.wpromocji.model.{User,Deal,Comment,Location}
 import net.liftweb.util.Helpers._
@@ -232,12 +233,12 @@ class Users extends PaginatorSnippet[User] {
   
   def autodetect(in: NodeSeq): NodeSeq = {
     if(S.post_?) {
-      val longitude = S.param("longitude").map(_.toDouble) match { 
-        case Full(l) => l 
+      val longitude = S.param("longitude") match { 
+        case Full(l) if l.length!=0 => l.toDouble 
         case _ => 999L
       }
-      val latitude  = S.param("latitude").map(_.toDouble) match { 
-        case Full(l) => l 
+      val latitude  = S.param("latitude") match { 
+        case Full(l) if l.length!=0 => l.toDouble 
         case _ => 999L
       }
       if(latitude != 999L && longitude != 999L) {
@@ -258,15 +259,22 @@ class Users extends PaginatorSnippet[User] {
   def location(in: NodeSeq): NodeSeq = {
     var text = ""
     
+    def updateLocationCookie(in: String): HTTPCookie = {
+      HTTPCookie("location",Full(in),
+        Full(S.hostName),Full(S.contextPath),Empty,Empty,Empty)
+    }
+    
     def userUpdateLocation(location: String) = {
       text = location
       UserLocation(location)
       User.currentUser.open_!.location(location).save
+      S.addCookie(updateLocationCookie(location))
     }
   
     def guestUpdateLocation(location: String) = {
       text = location
       UserLocation(location)
+      S.addCookie(updateLocationCookie(location))
     }
     
     if(UserLocation.is == "") {
