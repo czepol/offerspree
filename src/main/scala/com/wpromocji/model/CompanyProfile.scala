@@ -19,7 +19,7 @@ object CompanyProfile
 }
 
 class CompanyProfile extends LongKeyedMapper[CompanyProfile] 
-      with IdPK with ManyToMany {
+with IdPK with ManyToMany {
 
   def getSingleton = CompanyProfile
   

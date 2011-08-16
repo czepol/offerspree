@@ -46,13 +46,12 @@ with CRUDify[Long, Deal] {
 
 }
 
-class Deal extends LongKeyedMapper[Deal] 
-           with IdPK 
-           with OneToMany[Long, Deal] {
+class Deal extends LongKeyedMapper[Deal] with IdPK 
+with ManyToMany with OneToMany[Long, Deal] {
 	
   def getSingleton = Deal
 
-	object title extends MappedString(this,200)
+	object title extends MappedString(this,128)
 	object text extends MappedText(this) {
     def textareaRows  = 5
     def textareaCols = 50
@@ -69,7 +68,7 @@ class Deal extends LongKeyedMapper[Deal]
 	object date extends MappedDateTime(this) {
     override def defaultValue = new java.util.Date
 	}
-	object url extends MappedString(this, 2000)
+	object url extends MappedString(this, 256)
 	object store extends MappedString(this, 200)
 	object price extends MappedString(this, 20)
 	
@@ -98,6 +97,9 @@ class Deal extends LongKeyedMapper[Deal]
         case c: Category => Full(c.id.is -> c.title.is)
       })
 	}
+
+	object tags extends MappedManyToMany(
+    DealTag, DealTag.dealid, DealTag.tagid, Tag)
 	
 	object imageOrigin extends MappedString(this, 1024)
 	object imageThumb extends MappedString(this, 1024)

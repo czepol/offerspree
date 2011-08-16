@@ -37,12 +37,15 @@ with CRUDify[Long,Tag] {
 
 }
 
-class Tag extends LongKeyedMapper[Tag] with IdPK {
+class Tag extends LongKeyedMapper[Tag] with IdPK with ManyToMany {
 
   def getSingleton = Tag
 
   object name extends MappedPoliteString(this,120) {
 		override def setFilter = List(x=> x.trim)
   }
+  
+  object deals extends MappedManyToMany(
+    DealTag, DealTag.tagid, DealTag.dealid, Deal)
 
 }

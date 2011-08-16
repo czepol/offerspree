@@ -9,7 +9,6 @@ class CompanyAdmins extends Mapper[CompanyAdmins] {
   def getSingleton = CompanyAdmins
  
   object admin extends LongMappedMapper(this, User)
-
   object company extends LongMappedMapper(this, CompanyProfile)
 
 }

@@ -5,7 +5,7 @@ import net.liftweb.util.Helpers._
 import net.liftweb.common.{Full,Empty,Box}
 import net.liftweb.http._
 import net.liftweb.mapper._
-import com.wpromocji.model.{User,Deal,Comment,Vote,Category}
+import com.wpromocji.model._
 import com.wpromocji.util._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
@@ -200,6 +200,13 @@ class Deals {
     var dealid = dealId.toString
     var userid = ""
     var value  = Vote.getVotes(dealId).toString
+    var tags: List[NodeSeq] = Nil
+    var deal: Deal = Deal.create
+    
+    Deal.find(By(Deal.id, dealId)) match {
+      case Full(curr) => deal=curr
+      case _ => S.error(?("Nie znaleziono oferty")); S.redirectTo(S.uri)
+    }
     
     def submitUp() = {
       if(S.post_?) {
@@ -222,23 +229,39 @@ class Deals {
       case _ => userid = "-1"
     }    
     
-    Deal.find(By(Deal.id, dealId)) match {
-      case Full(deal) => 
-          bind("deal", in, 
-            "title" -> deal.title,
-            "titleLink" -> <a href={"/deal/"+deal.id+"/"+Deal.toPermalink(deal.title.toString)+".html"}>{deal.title}</a>,
-            "text" -> deal.text,
-            "expire" -> deal.expire,
-            "thumb" -> <img src={Deal.imageLink(deal.imageThumb)} alt="image" title={deal.title} />,
-            "image" -> <img src={Deal.imageLink(deal.imageOrigin)} alt="image" title={deal.title} />,
-            "dealid" -> SHtml.text(dealid, parm => dealid=parm, ("type","hidden")),
-            "userid" -> SHtml.text(userid, parm => userid=parm, ("type","hidden")),
-				    "value" -> SHtml.text(value, parm => value=parm, ("readonly", "readonly")),
-				    "voteup" -> SHtml.submit("+", submitUp),
-				    "votedown" -> SHtml.submit("-", submitDown)
-			    )
-      case _ => Text(?("Nie znaleziono żadnych ofert"))
+    for(t <- deal.tags) {
+      tags = tags ::: List(<a href={"/tag/"+t.name.is}>{t.name.is}</a>)
     }
+    println("");println("");println("")
+    println(tags)
+    
+    val tagged: NodeSeq = {
+      <ul>
+      {
+        tags.map { 
+          tag => <li>{tag}</li>
+        } toSeq
+      }
+      </ul>
+    }
+      
+    println("");println("");println("")
+    println(tagged)
+    println("");println("");println("")
+    bind("deal", in, 
+      "title" -> deal.title,
+      "titleLink" -> <a href={"/deal/"+deal.id+"/"+Deal.toPermalink(deal.title.toString)+".html"}>{deal.title}</a>,
+      "text" -> deal.text,
+      "tags" -> tagged,
+      "expire" -> deal.expire,
+      "thumb" -> <img src={Deal.imageLink(deal.imageThumb)} alt="image" title={deal.title} />,
+      "image" -> <img src={Deal.imageLink(deal.imageOrigin)} alt="image" title={deal.title} />,
+      "dealid" -> SHtml.text(dealid, parm => dealid=parm, ("type","hidden")),
+      "userid" -> SHtml.text(userid, parm => userid=parm, ("type","hidden")),
+	    "value" -> SHtml.text(value, parm => value=parm, ("readonly", "readonly")),
+	    "voteup" -> SHtml.submit("+", submitUp),
+	    "votedown" -> SHtml.submit("-", submitDown)
+    )    
   }
   
   def storeInfoBox(in: NodeSeq): NodeSeq = {
@@ -316,7 +339,7 @@ class Deals {
     }
   }
   
-  def navigation(in: NodeSeq): NodeSeq = {
+  def nextPrevDeals(in: NodeSeq): NodeSeq = {
     val dealId: Long = S.param("dealid").map(_.toLong) openOr 0L
     var next: Long = 0L
     var prev: Long = 0L
@@ -340,48 +363,11 @@ class Deals {
       Text("")
     }
   }
-   
-  /*def adminCreate(in: NodeSeq): NodeSeq = {
-    Deal.create.toForm(Full("Submit"), { _.save })
-  }
-  
-  def adminEdit(in: NodeSeq): NodeSeq = {
-    val dealId = S.param("dealid").map(_.toLong) openOr S.redirectTo("/404.html")
-    if(Deal.withIdExist_?(dealId)) {
-      Deal.findAll(By(Deal.id, dealId)).head.toForm(Full("Submit"), { _.save })
-    } else {
-      S.redirectTo("/404.html")
-    }
-  }
-  
-  def adminList(in: NodeSeq): NodeSeq = {
-    page.flatMap(
-      deal => {
-        bind("deal", in,
-          "dealid" -> deal.id,
-          "title" -> deal.title,
-          "price" -> deal.price,
-          "published" -> deal.published,
-          "edit" -> <a href={"/admin/deals/edit/"+deal.id}>Edit</a>,
-          "view" -> <a href={"/admin/deals/view/"+deal.id}>View</a>,
-          "delete" -> <a href={"/admin/deals/delete/"+deal.id}>Delete</a>
-        )
-      }
-    )
-  }
-  
-  def adminDelete(in: NodeSeq): NodeSeq = {
-    Text("")
-  }
-  
-  def adminView(in: NodeSeq): NodeSeq = {
-    Text("")
-  }
-  */
 }
 
 
 object imageFile extends RequestVar[Box[FileParamHolder]](Empty)
+
 object DealSubmit extends Wizard {
   val form = new Screen {
   
@@ -422,6 +408,9 @@ object DealSubmit extends Wizard {
         List(("0","-")) ::: Category.findAll.map(cat =>(cat.id.toString, ?(cat.l10n.toString))).toList
       override def toForm = SHtml.select(cats, Empty, cat => selectedCat = cat.toLong)
     }
+    
+    val tags = 
+      field(?("tags"), "")
       
     val description = 
       textarea(?("description"), "")
@@ -433,7 +422,6 @@ object DealSubmit extends Wizard {
       lazy val manifest = buildIt[Box[FileParamHolder]]
       override def toForm = SHtml.fileUpload(img => imageFile(Full(img)))
     }
-    override def hasUploadField = true   
     
   }
 
@@ -480,8 +468,38 @@ object DealSubmit extends Wizard {
         }
       }
     }
+    def saveTags(stringTags: String, deal: Deal) {
+      val splited = stringTags.split(",")
+      var tags: List[Tag] = Nil
+      var tagsList: List[String] = Nil
+      for(t <- splited) {
+        if(t.trim.length != 0)
+          tagsList = tagsList ::: List(t.trim) 
+      }
+      tagsList = tagsList.removeDuplicates
+      
+      println("Lista tagów:")
+      println(tagsList)
+      
+      for(t <- tagsList) {
+        val tag: Tag = Tag.find(By(Tag.name, t)) match {
+          case Full(tag) => tag
+          case Empty => Tag.create.name(t)
+          case _ => S.error("Error"); S.redirectTo("/error")
+        }
+        tag.deals += deal
+        tag.save
+        deal.tags += tag
+        deal.save
+        
+      }
+      println("Lista tagów: ")
+      println(deal.tags)
+
+    }
     val deal = Deal.create
     val format = new SimpleDateFormat("dd/MM/yyyy")
+    // val tags = List[String]
     if(form.startDate.trim!="") {
       try {
         val startDate: Date = format.parse(form.startDate)
@@ -519,6 +537,7 @@ object DealSubmit extends Wizard {
       imageFile.is match {
         case image => imageFile.is.map{ file => imageSave(file, dealId, deal) }   
       }
+      saveTags(form.tags, deal)
       val url = "/deal/"+dealId.toString+"/"+Deal.toPermalink(deal.title)+".html"
       S.redirectTo(url)
     }
@@ -527,4 +546,3 @@ object DealSubmit extends Wizard {
 
 }
 }
-
