@@ -16,6 +16,7 @@ class LiftProject(info: ProjectInfo) extends DefaultWebProject(info) {
   
   val wizard    = "net.liftweb" %% "lift-wizard" % liftVersion % "compile"
   val mapper    = "net.liftweb" %% "lift-mapper" % liftVersion % "compile"
+  val widgets   = "net.liftweb" %% "lift-widgets" % liftVersion % "compile" 
   val textile   = "net.liftweb" %% "lift-textile" % liftVersion % "compile"
   val postgresql= "postgresql" % "postgresql" % "9.0-801.jdbc4" % "compile"
   
