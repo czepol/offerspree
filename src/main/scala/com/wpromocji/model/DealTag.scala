@@ -2,9 +2,9 @@ package com.wpromocji.model
 
 import net.liftweb.mapper._
 
-object DealTag extends DealTag with MetaMapper[DealTag]
+object DealTag extends DealTag with LongKeyedMetaMapper[DealTag]
 
-class DealTag extends Mapper[DealTag] {
+class DealTag extends LongKeyedMapper[DealTag] with IdPK {
 
   def getSingleton = DealTag
   

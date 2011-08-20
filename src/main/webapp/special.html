@@ -1,40 +1,22 @@
 <lift:surround with="default" at="content">
-  <div class="offers">
-  <lift:DealsSpecial.list>
-    <div class="deal">
-      <h4><deal:title /></h4>
-      <div>
-		<style>
-			.deal .txt {width:485px;}
-			form.voting {float:left;width:40px;padding-right:10px;}
-			form.voting input[type=submit] {float:left;width:40px;font-size:12px;line-height:1em;}
-			form.voting input[type=text] {float:left;width:38px;padding:0;margin:0;text-align:center;}
-		</style>
-		<form method="post" class="voting">
-			<deal:dealid />
-			<deal:userid />
-			<deal:voteup />
-			<deal:value />
-			<deal:votedown />
-		</form>
-      </div>
-      <div class="txt">
-		<p><deal:text /></p>
-      </div>
-	  <div class="img">
-	    <deal:thumb><img src="/img/125x100.png" class="offer-img" alt="" /></deal:thumb>
-	  </div>
-	    <deal:actions />
-	  <div class="clear" />
-    </div>  
-    <hr />
-  </lift:DealsSpecial.list>
-  
-  <lift:DealsSpecial.paginate>
-  <div class="pagination">
+	<h3>Filtrowanie ofert</h3>
+	<lift:Menu.builder group="sorting" linkToSelf="true" li_item:class="active" ul:class="tabs" />
+	<div class="stream">
+	<lift:DealsSpecial.list>
+		<div class="deal">
+		  <h3><deal:title /></h3>
+		  <div class="img">
+			<deal:thumb><img src="/img/125x100.png" class="offer-img" alt="" /></deal:thumb>
+		  </div>
+		  <p><deal:text /></p>
+		  <div class="clear" />
+		</div>
+	</lift:DealsSpecial.list>
+	</div>
+	
+	<lift:DealsHot.paginate>
+	<div class="pagination">
 	<nav:prev /><nav:allpages/><nav:next/>
-  </div>
-  </lift:DealsSpecial.paginate>
-
-  </div>
+	</div>
+	</lift:DealsHot.paginate>	
 </lift:surround>

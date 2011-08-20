@@ -1,37 +1,20 @@
-<lift:surround with="default-deal" at="content">
+<lift:surround with="default-full" at="content">
 <lift:Deals.show>
-<div id="content">
+<div class="span12 columns">
 	<lift:bind-at name="title">Offer Spree :: <deal:title /></lift:bind-at>
     <div class="deal">
-	  <h4><deal:titleLink /></h4>
-      <div>
-		<style>
-			.deal .txt {width:485px;}
-			form.voting {float:left;width:40px;padding-right:10px;}
-			form.voting input[type=submit] {float:left;width:40px;font-size:12px;line-height:1em;}
-			form.voting input[type=text] {float:left;width:38px;padding:0;margin:0;text-align:center;}
-		</style>
-		<form method="post" class="voting">
-			<deal:dealid />
-			<deal:userid />
-			<deal:voteup />
-			<deal:value />
-			<deal:votedown />
-		</form>
-      </div>
-      <div class="txt">
+		<h3><deal:title /></h3>
+		<div class="img">
+			<deal:thumb><img src="/img/125x100.png" class="offer-img" alt="" /></deal:thumb>
+		</div>
 		<p><deal:text /></p>
-		<div class="tags"><deal:tags /></div>
-      </div>
-	  <div class="img">
-	    <deal:thumb><img src="/img/125x100.png" class="offer-img" alt="" /></deal:thumb>
-	  </div>
-	  <div class="clear" />
+		<br class="clear" />
+		<lift:Deals.nextPrevDeals>
+			<navigation:nav />
+		</lift:Deals.nextPrevDeals>
     </div>
 	
-	<lift:Deals.nextPrevDeals>
-		<navigation:nav />
-	</lift:Deals.nextPrevDeals>
+
 	
 	<br class="clear" style="padding: 1em 0;" />
 	
@@ -58,17 +41,22 @@
 		<p><form:submit /></p>
     </lift:Comments.addComment>
 </div>
-<div id="sidebar">
-  <div class="widget">
-  <lift:Deals.storeInfoBox>
-  <storetype:online>
-    <store:online />
-  </storetype:online>
-  <storetype:merchant>
-    <store:merchant />
-  </storetype:merchant>
-  </lift:Deals.storeInfoBox>
-  </div>
+
+<div class="span4 columns" style="width:240px;margin:0;">
+	<div class="widget">
+	<div class="tags">
+		<h4>Tagi:</h4>
+		<deal:tags />
+	</div>
+	<lift:Deals.storeInfoBox>
+		<storetype:online>
+			<store:online />
+		</storetype:online>
+		<storetype:merchant>
+			<store:merchant />
+		</storetype:merchant>
+	</lift:Deals.storeInfoBox>
+	</div>
 </div>
 <div class="clear" />
 </lift:Deals.show>

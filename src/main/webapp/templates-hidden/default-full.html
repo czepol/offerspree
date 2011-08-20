@@ -27,23 +27,7 @@
 	</div>
 	<div class="container">
 		<div class="row header">
-			<div class="span12 columns">
-				<lift:bind name="content" />
-			</div>
-			<div class="span4 columns">
-				<div class="widget">
-					<p>Current Omniauth info</p>
-					<div><a href='/auth/twitter/signin'>Sign in with Twitter</a></div>
-					<div><a href='/auth/facebook/signin'>Sign in with facebook</a></div>
-					<div><a href='/auth/github/signin'>Sign in with github</a></div>
-				</div>
-				<div class="widget">
-					<h3>Sidebar</h3>
-					<nav>
-						<lift:Menu.builder />
-					</nav>
-				</div>
-			</div>
+			<lift:bind name="content" />
 		</div>
 	<footer>
 		<p>Offer Spree 2011 &copy;</p>

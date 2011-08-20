@@ -9,6 +9,7 @@ import net.liftweb.http._
 import net.liftweb.http.S._
 import net.liftweb.sitemap._
 import net.liftweb.sitemap.Loc._
+import net.liftweb.widgets.autocomplete.AutoComplete
 import com.wpromocji.model._
 import com.wpromocji.api._
 import com.wpromocji.Helpers._
@@ -82,7 +83,9 @@ class Boot {
     
     LiftRules.setSiteMap(SiteMap(sitemaps: _*))
     
+    // Init modules
     Omniauth.init
+    AutoComplete.init
 
     LiftRules.ajaxStart = Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
           
@@ -92,7 +95,8 @@ class Boot {
     
     LiftRules.dispatch.append(DealAPI)
     LiftRules.dispatch.append(MerchantAPI)
-
+    LiftRules.dispatch.append(TagAPI)
+  
     val imagePath = Props.get("upload.imagepath") openOr "/src/main/webapp/images"
     
     LiftRules.statelessDispatchTable.append {

@@ -74,12 +74,23 @@ object User extends User with MetaMegaProtoUser[User] {
     Full(<lift:surround with="default" at="content"><lift:bind /></lift:surround>)
   
   override def loginXhtml = {  
-    (<form method="post" action={S.uri}><table><tr><td  
-              colspan="2">{S.??("log.in")}</td></tr>  
-          <tr><td>{S.?("username")}</td><td><user:username /></td></tr>  
-          <tr><td>{S.??("password")}</td><td><user:password /><user:next /></td></tr>  
-          <tr><td><a href={lostPasswordPath.mkString("/", "/", "")}  
-                >{S.??("recover.password")}</a></td><td><user:submit /></td></tr></table>
+    (<form method="post" action={S.uri}>
+     <fieldset>
+      <legend>{S.??("log.in")}</legend>  
+      <div class="clearfix">
+        <label>{S.?("username")}</label>
+        <div class="input"><user:username /></div>
+      </div>  
+      <div class="clearfix">
+        <label>{S.??("password")}</label>
+        <div class="input">
+          <user:password />
+        </div>
+      </div>  
+      <user:next />
+      <a href={lostPasswordPath.mkString("/", "/", "")}>{S.??("recover.password")}</a>
+      <div class="actions"><user:submit /></div>
+     </fieldset>
      </form>)  
   }  
   
@@ -118,21 +129,24 @@ object User extends User with MetaMegaProtoUser[User] {
       case _ => homePage
     }
     bind("user", loginXhtml,  
-         "username" -> (FocusOnLoad(<input type="text" name="username"/>)),  
-         "password" -> (<input type="password" name="password"/>),
+         "username" -> (FocusOnLoad(<input type="text" name="username" class="xlarge" />)),  
+         "password" -> (<input type="password" name="password" class="xlarge" />),
          "next" -> (<input type="hidden" name="next" value={next}/>),
-         "submit" -> (<input type="submit" value={S.??("log.in")}/>))  
+         "submit" -> (<input type="submit" value={S.??("log.in")} class="btn primary" />))  
   }
   
   override def signupXhtml(user: User) = {  
-    (<form method="post" action={S.uri}><table><tr><td  
-              colspan="2">{ S.??("sign.up") }</td></tr>  
+    (<form method="post" action={S.uri}>
+     <fieldset>
+       <legend>{ S.??("sign.up") }</legend>  
           {localForm(user, false)}  
-          <tr><td> </td><td><user:submit/></td></tr></table>
+          <div class="actions"><user:submit /></div>
           <div class="social-signup"><ul>
             <li><a href="/auth/facebook/signin"><img src="/img/signin_fb.png" alt="" /></a></li>
             <li><a href="/auth/twitter/signin"><img src="/img/signin_tw.png" alt="" /></a></li>
-          </ul></div></form>)  
+          </ul></div>
+     </fieldset>
+     </form>)  
   }  
   
   protected def localForm(user: User, ignorePassword: Boolean): NodeSeq = {  
@@ -144,7 +158,7 @@ object User extends User with MetaMegaProtoUser[User] {
         })).  
     flatMap(f =>  
       f.toForm.toList.map(form =>  
-        (<tr><td>{f.displayName}</td><td>{form}</td></tr>) ) )  
+        (<div class="clearfix"><label>{f.displayName}</label><div class="input">{form}</div></div>) ) )  
   } 
 }
 
