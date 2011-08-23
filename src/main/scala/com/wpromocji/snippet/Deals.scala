@@ -14,6 +14,7 @@ import net.liftweb.sitemap.Loc._
 import net.liftweb.util.Helpers._
 import net.liftweb.util._
 import net.liftweb.wizard._
+import net.liftweb.widgets.autocomplete.AutoComplete
 import util._
 import S.?
 
@@ -466,8 +467,8 @@ object imageFile extends RequestVar[Box[FileParamHolder]](Empty)
 object DealSubmit extends Wizard {
   val form = new Screen {
   
-    override def cancelButton: Elem = <button>{S.?("Cancel")}</button>  
-    override def finishButton: Elem = <button>{S.?("Finish")}</button>  
+    override def cancelButton: Elem = <button class="btn">{S.?("Cancel")}</button>  
+    override def finishButton: Elem = <button class="btn primary">{S.?("Finish")}</button>  
   
     val title = 
       field(?("title"), "", 
@@ -641,7 +642,6 @@ object DealSubmit extends Wizard {
 
 object DealEdit extends Wizard {
   val dealId = S.param("dealid").map(_.toLong) openOr S.redirectTo("/404.html")
-  println("ID edytowanej oferty to: "+dealId)
   Deal.find(By(Deal.id, dealId)) match {
     case Full(deal) => {    
       val form = new Screen {

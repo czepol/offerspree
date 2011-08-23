@@ -1,12 +1,90 @@
 <lift:surround with="default-full" at="content">
-<div class="span16 columns">
-  <head>
+<head>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
-	<script src="/js/autocomplete.js" type="text/javascript"></script>
-	<script src="/js/tagit.js" type="text/javascript"></script>
-	<link href="/css/tagit-simple-blue.css" rel="stylesheet" type="text/css"/>
-  </head>
-  <h2><lift:Loc.add-new-deal>Submit new offer</lift:Loc.add-new-deal></h2>
-  <lift:DealSubmit form="POST" multipart="true"></lift:DealSubmit>
+	<link type="text/css" href="/css/smoothness/jquery-ui-1.8.14.custom.css" rel="stylesheet" />	
+	<script src="/js/script.js"></script>
+</head>
+<div class="span16 columns">
+  <lift:DealCreate.form form="POST" multipart="true">
+	<fieldset>
+	<legend><lift:Loc.add-new-deal>Submit new offer</lift:Loc.add-new-deal></legend>
+		<div class="clearfix">
+			<label><lift:Loc.title>Title</lift:Loc.title> <sup>(<span class="red">*</span>)</sup></label>
+			<div class="input"><form:title /><form:titleError /><br/><span class="tip"><lift:Loc.titleHelp /></span></div>
+		</div>
+		<div class="clearfix">
+			<label><lift:Loc.description>Description</lift:Loc.description> <sup>(<span class="red">*</span>)</sup></label>
+			<div class="input"><form:description /><form:descriptionError /><br/><span class="tip"><lift:Loc.descriptionHelp /></span></div>
+		</div>
+		<div class="clearfix">
+			<label><lift:Loc.price>Price</lift:Loc.price> <sup>(<span class="red">*</span>)</sup></label>
+			<div class="input"><form:price /><form:priceError /><br/><span class="tip"><lift:Loc.priceHelp /></span></div>
+		</div>
+		<div class="clearfix">
+			<label><lift:Loc.dealtype>Deal type</lift:Loc.dealtype> <sup>(<span class="red">*</span>)</sup></label>
+			<div class="input"><ul class="inputs-list dealtype"><form:dealtype /></ul><form:dealtypeError /></div>
+		</div>
+		<div class="clearfix atOnline" style="display:none;">
+			<label><lift:Loc.url>URL</lift:Loc.url> <sup>(<span class="red">*</span>)</sup></label>
+			<div class="input"><form:url /><form:urlError /></div>
+		</div>
+		<div class="clearfix atMerchant" style="display:none;">
+			<label><lift:Loc.merchantName>Merchant</lift:Loc.merchantName> <sup>(<span class="red">*</span>)</sup></label>
+			<div class="input"><form:merchant /><form:merchantError /></div>
+		</div>
+		<div class="clearfix">
+			<label><lift:Loc.category>Category</lift:Loc.category> <sup>(<span class="red">*</span>)</sup></label>
+			<div class="input"><form:category /><form:categoryError /></div>
+		</div>
+		<div class="clearfix">
+			<label><lift:Loc.tags>Tags</lift:Loc.tags>: </label>
+			<div class="input"><form:tags /><br/><span class="tip"><lift:Loc.tagsHelp /></span></div>
+		</div>
+		<div class="clearfix">
+			<label><lift:Loc.dealdaterange>Date range</lift:Loc.dealdaterange>: </label>
+			<div class="input"><div class="inline-inputs"><form:start /> <lift:Loc.rangeTo>to</lift:Loc.rangeTo> <form:end /><br/><span class="tip"><lift:Loc.rangeHelp /></span></div></div>
+		</div>
+		<div class="clearfix">
+			<label><lift:Loc.dealimage>Image</lift:Loc.dealimage>: </label>
+			<div class="input"><form:upload /><span class="tip"><lift:Loc.imageHelp /></span></div>
+		</div>
+	<div class="clear" />
+	<div class="actions">
+		<form:submit />
+		<form:reset />
+		<span style="float:right;"><sup>(<span class="red">*</span>)</sup> &ndash; informacje wymagane.</span>
+	</div>
+	</fieldset>
+  </lift:DealCreate.form>
 </div>
+<script type="text/javascript">
+/* <![CDATA[ */
+$(document).ready(function(){
+	$(".dealtype input li.merchant input").change(function(){
+		if($(this).is(":checked")) {
+			$(".atOnline").hide();
+			$(".atMerchant").show();
+		}
+	});
+	$(".dealtype input li.online input").change(function(){
+		if($(this).is(":checked")){
+			$(".atOnline").show();
+			$(".atMerchant").hide();
+		}
+	}
+	if($(".dealtype input").val("merchant").is(":checked") && $(".atMerchant").is(":hidden")) {
+		$(".atMerchant").show();$(".atOnline").hide();
+	}
+	if($(".dealtype input").val("online").is(":checked") && $(".atOnline").is(":hidden")) {
+		$(".atOnline").show();$(".atMerchant").hide();
+	}
+	$("input.resetForm").click(function(){
+		return confirm("Czy na pewno chcesz zresetować formularz?");
+	});
+	$(".help-inline").each(function(){
+		$(".help-inline").parent().parent().addClass("error");
+	});
+});
+/* ]]> */
+</script>
 </lift:surround>

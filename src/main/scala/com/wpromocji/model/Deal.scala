@@ -8,8 +8,10 @@ import net.liftweb.mapper._
 import net.liftweb.http._
 import net.liftweb.json._
 import net.liftweb.json.JsonDSL._
+import S.?
 
 import java.util.Date
+import com.wpromocji.lib._
 
 /**
  * Deal model
@@ -31,6 +33,9 @@ with CRUDify[Long, Deal] {
   override def editMenuLocParams    = LocGroup("admin") :: Nil
   override def deleteMenuLocParams  = LocGroup("admin") :: Nil
   
+  override def fieldsForList: List[MappedField[_, Deal]] = 
+    List(id,title,date,expired,published,userid)
+  
   def loginAndComeBack = {
     if(User.loggedIn_?) {
       S.error("Brak uprawnień")
@@ -51,47 +56,72 @@ with ManyToMany with OneToMany[Long, Deal] {
 	
   def getSingleton = Deal
 
-	object title extends MappedString(this,128)
+	object title extends MappedString(this,128) {
+	  override def displayName = ?("title")
+	}
 	object text extends MappedText(this) {
-    def textareaRows  = 5
-    def textareaCols = 50
-    override def toForm: Box[Elem] = {  
-    S.fmapFunc({s: List[String] => this.setFromAny(s)}){funcName =>  
-    Full(<textarea name={funcName}  
-     rows={textareaRows.toString}  
-     cols={textareaCols.toString} id={fieldId}>{  
-       is match {  
-         case null => ""  
-         case s => s}}</textarea>)} 
-    }
+	  override def displayName = ?("description")
 	}
 	object date extends MappedDateTime(this) {
+	  override def displayName = ?("deal.date")
     override def defaultValue = new java.util.Date
 	}
-	object url extends MappedString(this, 256)
-	object store extends MappedString(this, 200)
-	object price extends MappedString(this, 20)
+	object url extends MappedString(this, 256) {
+	  override def displayName = ?("url")
+	}
+	object store extends MappedString(this, 200) {
+	  override def displayName = ?("store")
+	}
+	object price extends MappedString(this, 20) {
+	  override def displayName = ?("price")
+	}
 	
-	object value extends MappedInt(this)
+	object value extends MappedInt(this) {
+	  override def displayName = ?("deal.value")
+  }
 		
-	object draft extends MappedBoolean(this)
-	object expired extends MappedBoolean(this)
-  object published extends MappedBoolean(this)
+	object draft extends MappedBoolean(this) {
+	  override def displayName = ?("draft")
+	}
+	object expired extends MappedBoolean(this) {
+	  override def displayName = ?("expirde")
+	}
+  object published extends MappedBoolean(this) {
+    override def displayName = ?("published")
+  }
 
-  object merchant extends MappedBoolean(this)
-  object online extends MappedBoolean(this)
+  object merchant extends MappedBoolean(this) {
+    override def displayName = ?("merchant")
+  }
+  object online extends MappedBoolean(this) {
+    override def displayName = ?("online")
+  }
   
-  object start extends MappedDateTime(this)
-  object expire extends MappedDateTime(this)
+  object start extends MappedDateTime(this) {
+    override def displayName = ?("start")
+  }
+  object expire extends MappedDateTime(this) {
+    override def displayName = ?("end")
+  }
   
 	object userid extends LongMappedMapper(this, User) {
+	  override def displayName = ?("username")
     override def validSelectValues = 
       Full(User.findMap(OrderBy(User.id, Ascending)) {
         case u: User => Full(u.id.is -> u.userName.is)
       })
 	}
 	
+	object merchantid extends LongMappedMapper(this, Merchant) {
+	  override def displayName = ?("merchant")
+    override def validSelectValues = 
+      Full(Merchant.findMap(OrderBy(Merchant.name, Ascending)) {
+        case m: Merchant => Full(m.id.is -> m.name.is)
+      })
+	}
+	
 	object category extends LongMappedMapper(this, Category) {
+	  override def displayName = ?("category")
     override def validSelectValues = 
       Full(Category.findMap(OrderBy(Category.title, Ascending)) {
         case c: Category => Full(c.id.is -> c.title.is)
@@ -119,22 +149,20 @@ with ManyToMany with OneToMany[Long, Deal] {
   }
   
   def toPermalink(title: String): String = {
-    var input = title 
-    input = input.toLowerCase
-    input = input.replaceAll("[^a-z0-9-\\s]", "")
-    input = input.trim
-    input = input.replaceAll("\\s", "-")
-    input = input.replaceAll("\\-{2,}", "-")
-    input
+    HtmlHelpers.slugify(title)
   }
   
   def toPermalink(id: Long): String =
     Deal.find(By(Deal.id, id)) match {
-      case deal: Deal => {
+      case Full(deal) => {
           Deal.toPermalink(deal.title)
       }
       case _ => ""
     }
+  
+  def absLink(id: Long): String = {
+    "/deal/"+id.toString+"/"+Deal.toPermalink(id)+".html"
+  }
     
   def toJson(id: Long, ver: String): JValue = {
     if(ver == "1.0") {
