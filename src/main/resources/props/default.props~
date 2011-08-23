@@ -1,8 +1,0 @@
-db.driver=org.postgresql.Driver
-db.url=jdbc:postgresql:wpromocji
-db.user=wpromocji
-db.password=wpromocji
-
-deals.per_page = 20
-
-facebook.auth = ""
